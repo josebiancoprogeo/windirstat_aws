@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Amazon;
 using Amazon.Runtime;
 using Amazon.Runtime.CredentialManagement;
 
@@ -34,5 +35,31 @@ public class AwsProfileManager
         }
 
         throw new InvalidOperationException($"Profile '{profileName}' not found.");
+    }
+
+    public RegionEndpoint GetRegion(string profileName)
+    {
+        if (_sharedFile.TryGetProfile(profileName, out var profile) && profile.Region != null)
+        {
+            return profile.Region;
+        }
+
+        throw new InvalidOperationException($"Profile '{profileName}' not found or has no region.");
+    }
+
+    public void SaveProfile(string profileName, string accessKey, string secretKey, RegionEndpoint region)
+    {
+        var options = new CredentialProfileOptions
+        {
+            AccessKey = accessKey,
+            SecretKey = secretKey
+        };
+
+        var profile = new CredentialProfile(profileName, options)
+        {
+            Region = region
+        };
+
+        _sharedFile.RegisterProfile(profile);
     }
 }
