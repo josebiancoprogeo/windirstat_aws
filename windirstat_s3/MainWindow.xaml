@@ -4,9 +4,34 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:windirstat_s3"
+        xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls.DataVisualization.Toolkit"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="2*" />
+            <ColumnDefinition Width="3*" />
+        </Grid.ColumnDefinitions>
 
+        <TreeView x:Name="DirectoryTree" ItemsSource="{Binding Children}" SelectedItemChanged="DirectoryTree_OnSelectedItemChanged">
+            <TreeView.ItemTemplate>
+                <HierarchicalDataTemplate ItemsSource="{Binding Children}">
+                    <TextBlock Text="{Binding Name}" />
+                </HierarchicalDataTemplate>
+            </TreeView.ItemTemplate>
+        </TreeView>
+
+        <controls:TreeMap x:Name="Treemap" Grid.Column="1">
+            <controls:TreeMap.ItemDefinition>
+                <controls:TreeMapItemDefinition ValueBinding="{Binding Size}" />
+            </controls:TreeMap.ItemDefinition>
+            <controls:TreeMap.ItemTemplate>
+                <DataTemplate>
+                    <Border BorderBrush="Black" BorderThickness="1" Margin="1">
+                        <TextBlock Text="{Binding Name}" />
+                    </Border>
+                </DataTemplate>
+            </controls:TreeMap.ItemTemplate>
+        </controls:TreeMap>
     </Grid>
 </Window>

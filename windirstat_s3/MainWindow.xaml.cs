@@ -1,24 +1,35 @@
-﻿using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using windirstat_s3.Services;
+using windirstat_s3.ViewModels;
 
-namespace windirstat_s3
+namespace windirstat_s3;
+
+public partial class MainWindow : Window
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
-    public partial class MainWindow : Window
+    public DirectoryNodeViewModel Root { get; }
+
+    public MainWindow()
     {
-        public MainWindow()
+        InitializeComponent();
+
+        Root = CreateSampleData();
+        DataContext = Root;
+    }
+
+    private static DirectoryNodeViewModel CreateSampleData()
+    {
+        var root = new FolderNode("Root");
+        root.Children["Folder1"] = new FolderNode("Folder1") { Size = 300 };
+        root.Children["Folder2"] = new FolderNode("Folder2") { Size = 700 };
+        return new DirectoryNodeViewModel(root);
+    }
+
+    private void DirectoryTree_OnSelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+    {
+        if (e.NewValue is DirectoryNodeViewModel node)
         {
-            InitializeComponent();
+            Treemap.ItemsSource = node.Children;
         }
     }
 }
