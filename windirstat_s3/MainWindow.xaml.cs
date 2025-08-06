@@ -1,7 +1,11 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 using Amazon;
 using Amazon.S3;
+using LiveChartsCore;
+using LiveChartsCore.SkiaSharpView;
 using windirstat_s3.Services;
 using windirstat_s3.ViewModels;
 
@@ -37,7 +41,7 @@ public partial class MainWindow : Window
             var result = await scanner.ScanAsync(bucketName);
             _root = new DirectoryNodeViewModel(result);
             ResultTree.ItemsSource = _root.Children;
-            ResultTreemap.ItemsSource = null;
+            UpdateChart(Array.Empty<DirectoryNodeViewModel>());
         }
         catch (Exception ex)
         {
@@ -49,7 +53,19 @@ public partial class MainWindow : Window
     {
         if (ResultTree.SelectedItem is DirectoryNodeViewModel node)
         {
-            ResultTreemap.ItemsSource = node.Children;
+            UpdateChart(node.Children);
         }
+    }
+
+    private void UpdateChart(IEnumerable<DirectoryNodeViewModel> nodes)
+    {
+        ResultChart.Series = nodes
+            .Select(n => new PieSeries<double>
+            {
+                Values = new[] { (double)n.Size },
+                Name = n.Name
+            })
+            .Cast<ISeries>()
+            .ToArray();
     }
 }

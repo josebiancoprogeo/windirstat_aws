@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:windirstat_s3"
-        xmlns:dv="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls.DataVisualization.Toolkit"
+        xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid Margin="10">
@@ -31,11 +31,7 @@
                     </HierarchicalDataTemplate>
                 </TreeView.ItemTemplate>
             </TreeView>
-            <dv:TreeMap x:Name="ResultTreemap" Grid.Column="1">
-                <dv:TreeMap.ItemDefinition>
-                    <dv:TreeMapItemDefinition ValueBinding="{Binding Size}" LabelBinding="{Binding Name}" />
-                </dv:TreeMap.ItemDefinition>
-            </dv:TreeMap>
+            <lvc:PieChart x:Name="ResultChart" Grid.Column="1" />
         </Grid>
     </Grid>
 </Window>
