@@ -26,8 +26,9 @@ public class S3Scanner
         _s3 = s3;
     }
 
-    public async Task<FolderNode> ScanAsync(string bucketName, CancellationToken cancellationToken = default)
+    public async Task<FolderNode> ScanAsync(string bucketName, IEnumerable<string>? ignorePrefixes = null, CancellationToken cancellationToken = default)
     {
+        var prefixes = ignorePrefixes?.ToList() ?? new List<string>();
         var root = new FolderNode(bucketName);
 
         var request = new ListObjectsV2Request
@@ -43,6 +44,11 @@ public class S3Scanner
             foreach (var s3Object in response.S3Objects)
             {
                 if (s3Object.Key.EndsWith('/'))
+                {
+                    continue;
+                }
+
+                if (prefixes.Any(p => s3Object.Key.StartsWith(p)))
                 {
                     continue;
                 }
