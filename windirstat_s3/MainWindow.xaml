@@ -1,74 +1,67 @@
-﻿<Window x:Class="windirstat_s3.MainWindow"
+<Window x:Class="windirstat_s3.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:windirstat_s3"
-        xmlns:dv="clr-namespace:System.Windows.Controls.DataVisualization;assembly=DotNetProjects.DataVisualization.Toolkit"
-        mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="WinDirStat S3" Height="600" Width="900">
+    <Window.Resources>
+        <HierarchicalDataTemplate DataType="{x:Type local:DirectoryNodeViewModel}" ItemsSource="{Binding Children}">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="{Binding Name}"/>
+            </StackPanel>
+        </HierarchicalDataTemplate>
+    </Window.Resources>
+
     <Grid Margin="10">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
+
         <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
-            <TextBlock Text="Perfil:" VerticalAlignment="Center" />
-            <ComboBox x:Name="ProfileComboBox" Width="200" Margin="5,0,0,0" SelectionChanged="ProfileComboBox_SelectionChanged" />
-            <TextBlock Text="Bucket:" Margin="20,0,0,0" VerticalAlignment="Center" />
-            <ComboBox x:Name="BucketComboBox" Width="200" Margin="5,0,0,0" />
-            <TextBlock Text="Ignorar Prefixos:" Margin="20,0,0,0" VerticalAlignment="Center" />
-            <TextBox x:Name="IgnorePrefixesTextBox" Width="200" Margin="5,0,0,0" ToolTip="Separe por vírgulas" />
-              <Button Content="Scan" Margin="10,0,0,0" Click="ScanButton_Click" />
-              <ProgressBar x:Name="ScanProgressBar" Width="100" Height="20" Margin="10,0,0,0" Minimum="0" Maximum="100" />
-              <Button x:Name="CancelButton" Content="Cancelar" Margin="10,0,0,0" Click="CancelButton_Click" IsEnabled="False" />
-              <Button Content="Export CSV" Margin="10,0,0,0" Click="ExportCsvButton_Click" />
-              <Button Content="Export JSON" Margin="5,0,0,0" Click="ExportJsonButton_Click" />
-          </StackPanel>
+            <TextBlock Text="Perfil:" VerticalAlignment="Center"/>
+            <ComboBox x:Name="ProfileComboBox" Width="150" Margin="5,0,0,0" SelectionChanged="ProfileComboBox_SelectionChanged"/>
+            <TextBlock Text="Bucket:" Margin="10,0,0,0" VerticalAlignment="Center"/>
+            <ComboBox x:Name="BucketComboBox" Width="150" Margin="5,0,0,0"/>
+            <TextBlock Text="Ignorar Prefixos:" Margin="10,0,0,0" VerticalAlignment="Center"/>
+            <TextBox x:Name="IgnorePrefixesTextBox" Width="150" Margin="5,0,0,0" ToolTip="Separe por vírgulas"/>
+            <Button Content="Scan" Margin="10,0,0,0" Click="ScanButton_Click"/>
+            <ProgressBar Width="100" Height="20" Margin="10,0,0,0" Minimum="0" Maximum="100" Value="{Binding ProgressPercent}"/>
+            <TextBlock Text="{Binding ScanTime}" Margin="10,0,0,0" VerticalAlignment="Center"/>
+            <Button x:Name="CancelButton" Content="Cancelar" Margin="10,0,0,0" Click="CancelButton_Click" IsEnabled="False"/>
+            <Button Content="Export CSV" Margin="10,0,0,0" Click="ExportCsvButton_Click"/>
+            <Button Content="Export JSON" Margin="5,0,0,0" Click="ExportJsonButton_Click"/>
+        </StackPanel>
+
         <Grid Grid.Row="1">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="2*" />
-                <RowDefinition Height="3*" />
-            </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="2*" />
-                <ColumnDefinition Width="3*" />
+                <ColumnDefinition Width="260"/>
+                <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <TreeView x:Name="ResultTree" SelectedItemChanged="ResultTree_SelectedItemChanged" Grid.Row="0" Grid.Column="0">
-                <TreeView.ItemTemplate>
-                    <HierarchicalDataTemplate ItemsSource="{Binding Children}">
-                        <TextBlock Text="{Binding Display}" />
-                    </HierarchicalDataTemplate>
-                </TreeView.ItemTemplate>
-            </TreeView>
+            <TreeView x:Name="ResultTree" Grid.Column="0"
+                      ItemsSource="{Binding RootNodes}"
+                      SelectedItemChanged="ResultTree_SelectedItemChanged"/>
 
-            <Grid Grid.Row="0" Grid.Column="1" Margin="5">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="*" />
-                </Grid.RowDefinitions>
-                <TextBox x:Name="ExtensionFilterTextBox" Margin="0,0,0,5" TextChanged="ExtensionFilterTextBox_TextChanged" />
-                <DataGrid x:Name="ExtensionDataGrid" Grid.Row="1" AutoGenerateColumns="False" IsReadOnly="True">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="Extensão" Binding="{Binding Extension}" />
-                        <DataGridTextColumn Header="Quantidade" Binding="{Binding Count}" />
-                        <DataGridTextColumn Header="Tamanho Total" Binding="{Binding Size}" />
-                    </DataGrid.Columns>
-                </DataGrid>
-            </Grid>
-
-            <dv:TreeMap x:Name="ResultTreemap" Grid.Row="1" Grid.ColumnSpan="2">
-                <dv:TreeMap.ItemDefinition>
-                    <dv:TreeMapItemDefinition ValueBinding="{Binding Size}" ItemsSource="{Binding Children}">
-                        <dv:TreeMapItemDefinition.ItemTemplate>
+            <DataGrid Grid.Column="1" ItemsSource="{Binding SelectedNodeChildren}"
+                      AutoGenerateColumns="False" IsReadOnly="True">
+                <DataGrid.Columns>
+                    <DataGridTemplateColumn Header="Name" Width="200">
+                        <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding Name}" />
+                                <TextBlock Text="{Binding Name}"/>
                             </DataTemplate>
-                        </dv:TreeMapItemDefinition.ItemTemplate>
-                    </dv:TreeMapItemDefinition>
-                </dv:TreeMap.ItemDefinition>
-            </dv:TreeMap>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTextColumn Header="Subtree Percent" Binding="{Binding SubtreePercent, StringFormat={}{0:P2}}"/>
+                    <DataGridTextColumn Header="Percent" Binding="{Binding PercentOfTotal, StringFormat={}{0:P2}}"/>
+                    <DataGridTextColumn Header="Size" Binding="{Binding Size}"/>
+                    <DataGridTextColumn Header="Items" Binding="{Binding TotalItems}"/>
+                    <DataGridTextColumn Header="Files" Binding="{Binding TotalFiles}"/>
+                    <DataGridTextColumn Header="Subdirs" Binding="{Binding TotalSubdirs}"/>
+                    <DataGridTextColumn Header="Last Change" Binding="{Binding LastModified, StringFormat={}{0:G}}"/>
+                    <DataGridTextColumn Header="Attributes" Binding="{Binding Attributes}"/>
+                </DataGrid.Columns>
+            </DataGrid>
         </Grid>
     </Grid>
 </Window>
