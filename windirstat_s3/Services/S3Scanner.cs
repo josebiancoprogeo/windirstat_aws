@@ -45,7 +45,7 @@ public class S3Scanner
                     continue;
                 }
 
-                AddObject(root, s3Object.Key, s3Object.Size);
+                AddObject(root, s3Object.Key, s3Object.Size.GetValueOrDefault());
             }
 
             request.ContinuationToken = response.NextContinuationToken;
