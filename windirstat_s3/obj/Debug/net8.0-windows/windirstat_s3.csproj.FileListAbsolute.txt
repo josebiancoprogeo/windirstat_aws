@@ -1,0 +1,5 @@
+D:\Gdrive\CODIGO FONTE\PROGEO\windirstat_s3\windirstat_aws\windirstat_s3\obj\Debug\net8.0-windows\windirstat_s3.csproj.AssemblyReference.cache
+D:\Gdrive\CODIGO FONTE\PROGEO\windirstat_s3\windirstat_aws\windirstat_s3\obj\Debug\net8.0-windows\MainWindow.g.cs
+D:\Gdrive\CODIGO FONTE\PROGEO\windirstat_s3\windirstat_aws\windirstat_s3\obj\Debug\net8.0-windows\App.g.cs
+D:\Gdrive\CODIGO FONTE\PROGEO\windirstat_s3\windirstat_aws\windirstat_s3\obj\Debug\net8.0-windows\windirstat_s3_MarkupCompile.cache
+D:\Gdrive\CODIGO FONTE\PROGEO\windirstat_s3\windirstat_aws\windirstat_s3\obj\Debug\net8.0-windows\windirstat_s3_MarkupCompile.lref

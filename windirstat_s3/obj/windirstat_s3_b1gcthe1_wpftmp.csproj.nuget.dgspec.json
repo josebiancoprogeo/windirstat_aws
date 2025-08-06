@@ -49,10 +49,6 @@
             "AWSSDK.S3": {
               "target": "Package",
               "version": "[4.0.6.3, )"
-            },
-            "System.Windows.Controls.DataVisualization.Toolkit": {
-              "target": "Package",
-              "version": "[3.5.50211.1, )"
             }
           },
           "imports": [
