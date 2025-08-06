@@ -1,5 +1,6 @@
 using Amazon.S3;
 using Amazon.S3.Model;
+using System.IO;
 
 namespace windirstat_s3.Services;
 
@@ -8,6 +9,7 @@ public class FolderNode
     public string Name { get; }
     public long Size { get; set; }
     public Dictionary<string, FolderNode> Children { get; } = new();
+    public Dictionary<string, ExtensionInfo> Extensions { get; } = new();
 
     public FolderNode(string name)
     {
@@ -59,6 +61,10 @@ public class S3Scanner
     {
         root.Size += size;
         var node = root;
+
+        var extension = Path.GetExtension(key).ToLowerInvariant();
+        UpdateExtension(node, extension, size);
+
         var parts = key.Split('/', StringSplitOptions.RemoveEmptyEntries);
         for (var i = 0; i < parts.Length - 1; i++)
         {
@@ -71,7 +77,20 @@ public class S3Scanner
 
             child.Size += size;
             node = child;
+
+            UpdateExtension(node, extension, size);
         }
+    }
+
+    private static void UpdateExtension(FolderNode node, string extension, long size)
+    {
+        if (!node.Extensions.TryGetValue(extension, out var info))
+        {
+            info = new ExtensionInfo();
+            node.Extensions[extension] = info;
+        }
+        info.Count++;
+        info.Size += size;
     }
 }
 
