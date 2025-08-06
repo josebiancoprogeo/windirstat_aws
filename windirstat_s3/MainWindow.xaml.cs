@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Win32;
 using Amazon;
@@ -19,6 +20,7 @@ public partial class MainWindow : Window
     private DirectoryNodeViewModel? _root;
     private FolderNode? _result;
     private ICollectionView? _extensionView;
+    private CancellationTokenSource? _cts;
 
     public MainWindow()
     {
@@ -54,6 +56,11 @@ public partial class MainWindow : Window
             return;
         }
 
+        _cts = new CancellationTokenSource();
+        CancelButton.IsEnabled = true;
+        ScanProgressBar.Value = 0;
+        var progress = new Progress<double>(p => ScanProgressBar.Value = p);
+
         try
         {
             var credentials = _profileManager.GetCredentials(profileName);
@@ -62,16 +69,31 @@ public partial class MainWindow : Window
             var scanner = new S3Scanner(client);
             var prefixes = IgnorePrefixesTextBox.Text
                 .Split(new[] { ',', ';', '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-            _result = await scanner.ScanAsync(bucketName, prefixes);
+            _result = await scanner.ScanAsync(bucketName, prefixes, progress, _cts.Token);
             _root = new DirectoryNodeViewModel(_result);
             ResultTree.ItemsSource = _root.Children;
             ResultTreemap.ItemsSource = null;
             ExtensionDataGrid.ItemsSource = null;
         }
+        catch (OperationCanceledException)
+        {
+            MessageBox.Show("Varredura cancelada.");
+        }
         catch (Exception ex)
         {
             MessageBox.Show(ex.Message, "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
         }
+        finally
+        {
+            CancelButton.IsEnabled = false;
+            _cts = null;
+            ScanProgressBar.Value = 0;
+        }
+    }
+
+    private void CancelButton_Click(object sender, RoutedEventArgs e)
+    {
+        _cts?.Cancel();
     }
 
     private async void ProfileComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)

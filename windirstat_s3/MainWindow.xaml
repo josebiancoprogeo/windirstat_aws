@@ -19,10 +19,12 @@
             <ComboBox x:Name="BucketComboBox" Width="200" Margin="5,0,0,0" />
             <TextBlock Text="Ignorar Prefixos:" Margin="20,0,0,0" VerticalAlignment="Center" />
             <TextBox x:Name="IgnorePrefixesTextBox" Width="200" Margin="5,0,0,0" ToolTip="Separe por vírgulas" />
-            <Button Content="Scan" Margin="10,0,0,0" Click="ScanButton_Click" />
-            <Button Content="Export CSV" Margin="10,0,0,0" Click="ExportCsvButton_Click" />
-            <Button Content="Export JSON" Margin="5,0,0,0" Click="ExportJsonButton_Click" />
-        </StackPanel>
+              <Button Content="Scan" Margin="10,0,0,0" Click="ScanButton_Click" />
+              <ProgressBar x:Name="ScanProgressBar" Width="100" Height="20" Margin="10,0,0,0" Minimum="0" Maximum="100" />
+              <Button x:Name="CancelButton" Content="Cancelar" Margin="10,0,0,0" Click="CancelButton_Click" IsEnabled="False" />
+              <Button Content="Export CSV" Margin="10,0,0,0" Click="ExportCsvButton_Click" />
+              <Button Content="Export JSON" Margin="5,0,0,0" Click="ExportJsonButton_Click" />
+          </StackPanel>
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="2*" />

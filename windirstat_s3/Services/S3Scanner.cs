@@ -26,16 +26,56 @@ public class S3Scanner
         _s3 = s3;
     }
 
-    public async Task<FolderNode> ScanAsync(string bucketName, IEnumerable<string>? ignorePrefixes = null, CancellationToken cancellationToken = default)
+    public async Task<FolderNode> ScanAsync(string bucketName, IEnumerable<string>? ignorePrefixes = null, IProgress<double>? progress = null, CancellationToken cancellationToken = default)
     {
         var prefixes = ignorePrefixes?.ToList() ?? new List<string>();
         var root = new FolderNode(bucketName);
+
+        var totalObjects = 0;
+        if (progress != null)
+        {
+            var countRequest = new ListObjectsV2Request
+            {
+                BucketName = bucketName
+            };
+
+            ListObjectsV2Response countResponse;
+            do
+            {
+                countResponse = await _s3.ListObjectsV2Async(countRequest, cancellationToken);
+
+                foreach (var s3Object in countResponse.S3Objects)
+                {
+                    if (s3Object.Key.EndsWith('/'))
+                    {
+                        continue;
+                    }
+
+                    if (prefixes.Any(p => s3Object.Key.StartsWith(p)))
+                    {
+                        continue;
+                    }
+
+                    totalObjects++;
+                }
+
+                countRequest.ContinuationToken = countResponse.NextContinuationToken;
+
+            } while (countResponse.IsTruncated.GetValueOrDefault());
+
+            if (totalObjects == 0)
+            {
+                progress.Report(100);
+                return root;
+            }
+        }
 
         var request = new ListObjectsV2Request
         {
             BucketName = bucketName
         };
 
+        var processed = 0;
         ListObjectsV2Response response;
         do
         {
@@ -54,12 +94,15 @@ public class S3Scanner
                 }
 
                 AddObject(root, s3Object.Key, s3Object.Size.GetValueOrDefault());
+                processed++;
+                progress?.Report((double)processed / totalObjects * 100);
             }
 
             request.ContinuationToken = response.NextContinuationToken;
 
         } while (response.IsTruncated.GetValueOrDefault());
 
+        progress?.Report(100);
         return root;
     }
 
