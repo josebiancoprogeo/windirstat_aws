@@ -14,9 +14,9 @@
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
             <TextBlock Text="Perfil:" VerticalAlignment="Center" />
-            <ComboBox x:Name="ProfileComboBox" Width="200" Margin="5,0,0,0" />
+            <ComboBox x:Name="ProfileComboBox" Width="200" Margin="5,0,0,0" SelectionChanged="ProfileComboBox_SelectionChanged" />
             <TextBlock Text="Bucket:" Margin="20,0,0,0" VerticalAlignment="Center" />
-            <TextBox x:Name="BucketTextBox" Width="200" Margin="5,0,0,0" />
+            <ComboBox x:Name="BucketComboBox" Width="200" Margin="5,0,0,0" />
             <TextBlock Text="Ignorar Prefixos:" Margin="20,0,0,0" VerticalAlignment="Center" />
             <TextBox x:Name="IgnorePrefixesTextBox" Width="200" Margin="5,0,0,0" ToolTip="Separe por vírgulas" />
             <Button Content="Scan" Margin="10,0,0,0" Click="ScanButton_Click" />
