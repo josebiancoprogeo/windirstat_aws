@@ -1,0 +1,24 @@
+using System.Collections.ObjectModel;
+using System.Linq;
+using windirstat_s3.Services;
+
+namespace windirstat_s3.ViewModels;
+
+public class DirectoryNodeViewModel
+{
+    public string Name { get; }
+    public long Size { get; }
+    public ObservableCollection<DirectoryNodeViewModel> Children { get; } = new();
+
+    public string Display => $"{Name} ({Size})";
+
+    public DirectoryNodeViewModel(FolderNode node)
+    {
+        Name = node.Name;
+        Size = node.Size;
+        foreach (var child in node.Children.Values.OrderByDescending(c => c.Size))
+        {
+            Children.Add(new DirectoryNodeViewModel(child));
+        }
+    }
+}

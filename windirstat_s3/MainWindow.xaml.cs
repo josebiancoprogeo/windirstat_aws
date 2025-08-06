@@ -3,12 +3,14 @@ using System.Windows;
 using Amazon;
 using Amazon.S3;
 using windirstat_s3.Services;
+using windirstat_s3.ViewModels;
 
 namespace windirstat_s3;
 
 public partial class MainWindow : Window
 {
     private readonly AwsProfileManager _profileManager = new();
+    private DirectoryNodeViewModel? _root;
 
     public MainWindow()
     {
@@ -33,11 +35,21 @@ public partial class MainWindow : Window
             using var client = new AmazonS3Client(credentials, RegionEndpoint.USEast1);
             var scanner = new S3Scanner(client);
             var result = await scanner.ScanAsync(bucketName);
-            MessageBox.Show($"Total bytes: {result.Size}");
+            _root = new DirectoryNodeViewModel(result);
+            ResultTree.ItemsSource = _root.Children;
+            ResultTreemap.ItemsSource = null;
         }
         catch (Exception ex)
         {
             MessageBox.Show(ex.Message, "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
+    private void ResultTree_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+    {
+        if (ResultTree.SelectedItem is DirectoryNodeViewModel node)
+        {
+            ResultTreemap.ItemsSource = node.Children;
         }
     }
 }
