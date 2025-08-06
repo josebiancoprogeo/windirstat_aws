@@ -8,6 +8,7 @@ public class FolderNode
 {
     public string Name { get; }
     public long Size { get; set; }
+    public long FileCount { get; set; }
     public Dictionary<string, FolderNode> Children { get; } = new();
     public Dictionary<string, ExtensionInfo> Extensions { get; } = new();
 
@@ -109,6 +110,7 @@ public class S3Scanner
     private static void AddObject(FolderNode root, string key, long size)
     {
         root.Size += size;
+        root.FileCount++;
         var node = root;
 
         var extension = Path.GetExtension(key).ToLowerInvariant();
@@ -125,6 +127,7 @@ public class S3Scanner
             }
 
             child.Size += size;
+            child.FileCount++;
             node = child;
 
             UpdateExtension(node, extension, size);
