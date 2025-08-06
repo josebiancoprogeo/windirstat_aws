@@ -35,7 +35,13 @@
                 <TabItem Header="Treemap">
                     <dv:TreeMap x:Name="ResultTreemap">
                         <dv:TreeMap.ItemDefinition>
-                            <dv:TreeMapItemDefinition ValueBinding="{Binding Size}" LabelBinding="{Binding Name}" />
+                            <dv:TreeMapItemDefinition ValueBinding="{Binding Size}" ItemsSource="{Binding Children}">
+                                <dv:TreeMapItemDefinition.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Name}" />
+                                    </DataTemplate>
+                                </dv:TreeMapItemDefinition.ItemTemplate>
+                            </dv:TreeMapItemDefinition>
                         </dv:TreeMap.ItemDefinition>
                     </dv:TreeMap>
                 </TabItem>
