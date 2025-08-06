@@ -8,15 +8,17 @@ public class DirectoryNodeViewModel
 {
     public string Name { get; }
     public long Size { get; }
+    public long FileCount { get; }
     public ObservableCollection<DirectoryNodeViewModel> Children { get; } = new();
     public ObservableCollection<ExtensionInfoViewModel> Extensions { get; } = new();
 
-    public string Display => $"{Name} ({Size})";
+    public string Display => $"{Name} ({FileCount} arquivos, {Size} bytes)";
 
     public DirectoryNodeViewModel(FolderNode node)
     {
         Name = node.Name;
         Size = node.Size;
+        FileCount = node.FileCount;
         foreach (var child in node.Children.Values.OrderByDescending(c => c.Size))
         {
             Children.Add(new DirectoryNodeViewModel(child));
