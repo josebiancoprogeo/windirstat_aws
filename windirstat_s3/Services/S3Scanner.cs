@@ -52,7 +52,7 @@ public class S3Scanner
 
             request.ContinuationToken = response.NextContinuationToken;
 
-        } while (response.IsTruncated);
+        } while (response.IsTruncated.GetValueOrDefault());
 
         return root;
     }
