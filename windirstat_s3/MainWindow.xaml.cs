@@ -3,6 +3,7 @@ using System.Windows;
 using System.ComponentModel;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Linq;
 using Microsoft.Win32;
 using Amazon;
 using Amazon.S3;
@@ -21,7 +22,23 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
-        ProfileComboBox.ItemsSource = _profileManager.ListProfiles();
+
+        var profiles = _profileManager.ListProfiles().ToList();
+        if (!profiles.Any())
+        {
+            var dialog = new CredentialsWindow { Owner = this };
+            if (dialog.ShowDialog() == true && dialog.SaveCredentials && dialog.SelectedRegion != null)
+            {
+                _profileManager.SaveProfile("default", dialog.AccessKeyId, dialog.SecretAccessKey, dialog.SelectedRegion);
+                profiles = _profileManager.ListProfiles().ToList();
+            }
+        }
+
+        ProfileComboBox.ItemsSource = profiles;
+        if (profiles.Any())
+        {
+            ProfileComboBox.SelectedIndex = 0;
+        }
     }
 
     private async void ScanButton_Click(object sender, RoutedEventArgs e)
@@ -38,7 +55,8 @@ public partial class MainWindow : Window
         try
         {
             var credentials = _profileManager.GetCredentials(profileName);
-            using var client = new AmazonS3Client(credentials, RegionEndpoint.USEast1);
+            var region = _profileManager.GetRegion(profileName);
+            using var client = new AmazonS3Client(credentials, region);
             var scanner = new S3Scanner(client);
             var prefixes = IgnorePrefixesTextBox.Text
                 .Split(new[] { ',', ';', '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
