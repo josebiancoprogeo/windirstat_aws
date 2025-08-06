@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Win32;
 using Amazon;
 using Amazon.S3;
@@ -38,13 +39,14 @@ public partial class MainWindow : Window
         if (profiles.Any())
         {
             ProfileComboBox.SelectedIndex = 0;
+            _ = LoadBucketsForSelectedProfileAsync();
         }
     }
 
     private async void ScanButton_Click(object sender, RoutedEventArgs e)
     {
         var profileName = ProfileComboBox.SelectedItem as string;
-        var bucketName = BucketTextBox.Text;
+        var bucketName = BucketComboBox.SelectedItem as string;
 
         if (string.IsNullOrWhiteSpace(profileName) || string.IsNullOrWhiteSpace(bucketName))
         {
@@ -65,6 +67,39 @@ public partial class MainWindow : Window
             ResultTree.ItemsSource = _root.Children;
             ResultTreemap.ItemsSource = null;
             ExtensionDataGrid.ItemsSource = null;
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(ex.Message, "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
+    private async void ProfileComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        await LoadBucketsForSelectedProfileAsync();
+    }
+
+    private async Task LoadBucketsForSelectedProfileAsync()
+    {
+        var profileName = ProfileComboBox.SelectedItem as string;
+        if (string.IsNullOrWhiteSpace(profileName))
+        {
+            BucketComboBox.ItemsSource = null;
+            return;
+        }
+
+        try
+        {
+            var credentials = _profileManager.GetCredentials(profileName);
+            var region = _profileManager.GetRegion(profileName);
+            using var client = new AmazonS3Client(credentials, region);
+            var response = await client.ListBucketsAsync();
+            var buckets = response.Buckets.Select(b => b.BucketName).OrderBy(b => b).ToList();
+            BucketComboBox.ItemsSource = buckets;
+            if (buckets.Any())
+            {
+                BucketComboBox.SelectedIndex = 0;
+            }
         }
         catch (Exception ex)
         {
