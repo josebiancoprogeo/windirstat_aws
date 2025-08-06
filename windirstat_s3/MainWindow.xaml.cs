@@ -1,5 +1,8 @@
 using System;
 using System.Windows;
+using System.ComponentModel;
+using System.Windows.Controls;
+using System.Windows.Data;
 using Amazon;
 using Amazon.S3;
 using windirstat_s3.Services;
@@ -11,6 +14,7 @@ public partial class MainWindow : Window
 {
     private readonly AwsProfileManager _profileManager = new();
     private DirectoryNodeViewModel? _root;
+    private ICollectionView? _extensionView;
 
     public MainWindow()
     {
@@ -38,6 +42,7 @@ public partial class MainWindow : Window
             _root = new DirectoryNodeViewModel(result);
             ResultTree.ItemsSource = _root.Children;
             ResultTreemap.ItemsSource = null;
+            ExtensionDataGrid.ItemsSource = null;
         }
         catch (Exception ex)
         {
@@ -50,6 +55,35 @@ public partial class MainWindow : Window
         if (ResultTree.SelectedItem is DirectoryNodeViewModel node)
         {
             ResultTreemap.ItemsSource = node.Children;
+            _extensionView = CollectionViewSource.GetDefaultView(node.Extensions);
+            _extensionView.SortDescriptions.Clear();
+            _extensionView.SortDescriptions.Add(new SortDescription(nameof(ExtensionInfoViewModel.Size), ListSortDirection.Descending));
+            ExtensionDataGrid.ItemsSource = _extensionView;
+            ApplyExtensionFilter();
         }
+    }
+
+    private void ExtensionFilterTextBox_TextChanged(object sender, TextChangedEventArgs e)
+    {
+        ApplyExtensionFilter();
+    }
+
+    private void ApplyExtensionFilter()
+    {
+        if (_extensionView == null)
+        {
+            return;
+        }
+
+        var filterText = ExtensionFilterTextBox.Text?.ToLowerInvariant() ?? string.Empty;
+        if (string.IsNullOrWhiteSpace(filterText))
+        {
+            _extensionView.Filter = null;
+        }
+        else
+        {
+            _extensionView.Filter = item => item is ExtensionInfoViewModel ext && ext.Extension.ToLowerInvariant().Contains(filterText);
+        }
+        _extensionView.Refresh();
     }
 }
