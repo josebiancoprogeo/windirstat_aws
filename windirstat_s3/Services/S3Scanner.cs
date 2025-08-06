@@ -1,5 +1,6 @@
 using Amazon.S3;
 using Amazon.S3.Model;
+using System;
 using System.IO;
 
 namespace windirstat_s3.Services;
@@ -9,6 +10,8 @@ public class FolderNode
     public string Name { get; }
     public long Size { get; set; }
     public long FileCount { get; set; }
+    public long OwnSize { get; set; }
+    public DateTime LastModified { get; set; }
     public Dictionary<string, FolderNode> Children { get; } = new();
     public Dictionary<string, ExtensionInfo> Extensions { get; } = new();
 
@@ -94,7 +97,7 @@ public class S3Scanner
                     continue;
                 }
 
-                AddObject(root, s3Object.Key, s3Object.Size.GetValueOrDefault());
+                AddObject(root, s3Object.Key, s3Object.Size.GetValueOrDefault(), s3Object.LastModified.GetValueOrDefault());
                 processed++;
                 progress?.Report((double)processed / totalObjects * 100);
             }
@@ -107,10 +110,11 @@ public class S3Scanner
         return root;
     }
 
-    private static void AddObject(FolderNode root, string key, long size)
+    private static void AddObject(FolderNode root, string key, long size, DateTime lastModified)
     {
         root.Size += size;
         root.FileCount++;
+        root.LastModified = root.LastModified > lastModified ? root.LastModified : lastModified;
         var node = root;
 
         var extension = Path.GetExtension(key).ToLowerInvariant();
@@ -128,10 +132,12 @@ public class S3Scanner
 
             child.Size += size;
             child.FileCount++;
+            child.LastModified = child.LastModified > lastModified ? child.LastModified : lastModified;
             node = child;
 
             UpdateExtension(node, extension, size);
         }
+        node.OwnSize += size;
     }
 
     private static void UpdateExtension(FolderNode node, string extension, long size)

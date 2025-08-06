@@ -1,30 +1,56 @@
 using System;
-using System.Windows;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Windows.Controls;
-using System.Windows.Data;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Win32;
-using Amazon;
+using System.Windows;
+using System.Windows.Controls;
 using Amazon.S3;
+using Microsoft.Win32;
 using windirstat_s3.Services;
 using windirstat_s3.ViewModels;
 
 namespace windirstat_s3;
 
-public partial class MainWindow : Window
+public partial class MainWindow : Window, INotifyPropertyChanged
 {
     private readonly AwsProfileManager _profileManager = new();
-    private DirectoryNodeViewModel? _root;
     private FolderNode? _result;
-    private ICollectionView? _extensionView;
     private CancellationTokenSource? _cts;
+    private Stopwatch? _stopwatch;
+
+    public ObservableCollection<DirectoryNodeViewModel> RootNodes { get; } = new();
+    private ObservableCollection<DirectoryNodeViewModel> _selectedNodeChildren = new();
+    public ObservableCollection<DirectoryNodeViewModel> SelectedNodeChildren
+    {
+        get => _selectedNodeChildren;
+        set { _selectedNodeChildren = value; OnPropertyChanged(nameof(SelectedNodeChildren)); }
+    }
+
+    private double _progressPercent;
+    public double ProgressPercent
+    {
+        get => _progressPercent;
+        set { _progressPercent = value; OnPropertyChanged(nameof(ProgressPercent)); }
+    }
+
+    private string _scanTime = string.Empty;
+    public string ScanTime
+    {
+        get => _scanTime;
+        set { _scanTime = value; OnPropertyChanged(nameof(ScanTime)); }
+    }
+
+    public event PropertyChangedEventHandler? PropertyChanged;
+    private void OnPropertyChanged(string propertyName) =>
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
     public MainWindow()
     {
         InitializeComponent();
+        DataContext = this;
 
         var profiles = _profileManager.ListProfiles().ToList();
         if (!profiles.Any())
@@ -58,8 +84,9 @@ public partial class MainWindow : Window
 
         _cts = new CancellationTokenSource();
         CancelButton.IsEnabled = true;
-        ScanProgressBar.Value = 0;
-        var progress = new Progress<double>(p => ScanProgressBar.Value = p);
+        ProgressPercent = 0;
+        _stopwatch = Stopwatch.StartNew();
+        var progress = new Progress<double>(p => ProgressPercent = p);
 
         try
         {
@@ -70,10 +97,10 @@ public partial class MainWindow : Window
             var prefixes = IgnorePrefixesTextBox.Text
                 .Split(new[] { ',', ';', '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
             _result = await scanner.ScanAsync(bucketName, prefixes, progress, _cts.Token);
-            _root = new DirectoryNodeViewModel(_result);
-            ResultTree.ItemsSource = _root.Children;
-            ResultTreemap.ItemsSource = null;
-            ExtensionDataGrid.ItemsSource = null;
+            var rootView = new DirectoryNodeViewModel(_result, _result.Size);
+            RootNodes.Clear();
+            RootNodes.Add(rootView);
+            SelectedNodeChildren = new ObservableCollection<DirectoryNodeViewModel>(rootView.Children);
         }
         catch (OperationCanceledException)
         {
@@ -87,7 +114,12 @@ public partial class MainWindow : Window
         {
             CancelButton.IsEnabled = false;
             _cts = null;
-            ScanProgressBar.Value = 0;
+            ProgressPercent = 0;
+            if (_stopwatch != null)
+            {
+                _stopwatch.Stop();
+                ScanTime = _stopwatch.Elapsed.ToString("mm\\:ss");
+            }
         }
     }
 
@@ -133,37 +165,8 @@ public partial class MainWindow : Window
     {
         if (ResultTree.SelectedItem is DirectoryNodeViewModel node)
         {
-            ResultTreemap.ItemsSource = node.Children;
-            _extensionView = CollectionViewSource.GetDefaultView(node.Extensions);
-            _extensionView.SortDescriptions.Clear();
-            _extensionView.SortDescriptions.Add(new SortDescription(nameof(ExtensionInfoViewModel.Size), ListSortDirection.Descending));
-            ExtensionDataGrid.ItemsSource = _extensionView;
-            ApplyExtensionFilter();
+            SelectedNodeChildren = new ObservableCollection<DirectoryNodeViewModel>(node.Children);
         }
-    }
-
-    private void ExtensionFilterTextBox_TextChanged(object sender, TextChangedEventArgs e)
-    {
-        ApplyExtensionFilter();
-    }
-
-    private void ApplyExtensionFilter()
-    {
-        if (_extensionView == null)
-        {
-            return;
-        }
-
-        var filterText = ExtensionFilterTextBox.Text?.ToLowerInvariant() ?? string.Empty;
-        if (string.IsNullOrWhiteSpace(filterText))
-        {
-            _extensionView.Filter = null;
-        }
-        else
-        {
-            _extensionView.Filter = item => item is ExtensionInfoViewModel ext && ext.Extension.ToLowerInvariant().Contains(filterText);
-        }
-        _extensionView.Refresh();
     }
 
     private void ExportCsvButton_Click(object sender, RoutedEventArgs e)
