@@ -3,6 +3,7 @@ using System.Windows;
 using System.ComponentModel;
 using System.Windows.Controls;
 using System.Windows.Data;
+using Microsoft.Win32;
 using Amazon;
 using Amazon.S3;
 using windirstat_s3.Services;
@@ -14,6 +15,7 @@ public partial class MainWindow : Window
 {
     private readonly AwsProfileManager _profileManager = new();
     private DirectoryNodeViewModel? _root;
+    private FolderNode? _result;
     private ICollectionView? _extensionView;
 
     public MainWindow()
@@ -38,8 +40,10 @@ public partial class MainWindow : Window
             var credentials = _profileManager.GetCredentials(profileName);
             using var client = new AmazonS3Client(credentials, RegionEndpoint.USEast1);
             var scanner = new S3Scanner(client);
-            var result = await scanner.ScanAsync(bucketName);
-            _root = new DirectoryNodeViewModel(result);
+            var prefixes = IgnorePrefixesTextBox.Text
+                .Split(new[] { ',', ';', '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            _result = await scanner.ScanAsync(bucketName, prefixes);
+            _root = new DirectoryNodeViewModel(_result);
             ResultTree.ItemsSource = _root.Children;
             ResultTreemap.ItemsSource = null;
             ExtensionDataGrid.ItemsSource = null;
@@ -85,5 +89,35 @@ public partial class MainWindow : Window
             _extensionView.Filter = item => item is ExtensionInfoViewModel ext && ext.Extension.ToLowerInvariant().Contains(filterText);
         }
         _extensionView.Refresh();
+    }
+
+    private void ExportCsvButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (_result == null)
+        {
+            MessageBox.Show("Nenhum resultado para exportar.");
+            return;
+        }
+
+        var dialog = new SaveFileDialog { Filter = "CSV files (*.csv)|*.csv" };
+        if (dialog.ShowDialog() == true)
+        {
+            ReportExporter.ToCsv(_result, dialog.FileName);
+        }
+    }
+
+    private void ExportJsonButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (_result == null)
+        {
+            MessageBox.Show("Nenhum resultado para exportar.");
+            return;
+        }
+
+        var dialog = new SaveFileDialog { Filter = "JSON files (*.json)|*.json" };
+        if (dialog.ShowDialog() == true)
+        {
+            ReportExporter.ToJson(_result, dialog.FileName);
+        }
     }
 }

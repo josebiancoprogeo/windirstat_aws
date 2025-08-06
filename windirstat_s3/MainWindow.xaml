@@ -17,7 +17,11 @@
             <ComboBox x:Name="ProfileComboBox" Width="200" Margin="5,0,0,0" />
             <TextBlock Text="Bucket:" Margin="20,0,0,0" VerticalAlignment="Center" />
             <TextBox x:Name="BucketTextBox" Width="200" Margin="5,0,0,0" />
+            <TextBlock Text="Ignorar Prefixos:" Margin="20,0,0,0" VerticalAlignment="Center" />
+            <TextBox x:Name="IgnorePrefixesTextBox" Width="200" Margin="5,0,0,0" ToolTip="Separe por vírgulas" />
             <Button Content="Scan" Margin="10,0,0,0" Click="ScanButton_Click" />
+            <Button Content="Export CSV" Margin="10,0,0,0" Click="ExportCsvButton_Click" />
+            <Button Content="Export JSON" Margin="5,0,0,0" Click="ExportJsonButton_Click" />
         </StackPanel>
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
