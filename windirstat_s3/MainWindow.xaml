@@ -3,14 +3,6 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:viewModels="clr-namespace:windirstat_s3.ViewModels"
         Title="WinDirStat S3" Height="600" Width="900">
-    <Window.Resources>
-        <HierarchicalDataTemplate DataType="{x:Type viewModels:DirectoryNodeViewModel}" ItemsSource="{Binding Children}">
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="{Binding Name}"/>
-            </StackPanel>
-        </HierarchicalDataTemplate>
-    </Window.Resources>
-
     <Grid Margin="10">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -32,36 +24,70 @@
             <Button Content="Export JSON" Margin="5,0,0,0" Click="ExportJsonButton_Click"/>
         </StackPanel>
 
-        <Grid Grid.Row="1">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="260"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
+        <Grid Grid.Row="1" Grid.IsSharedSizeScope="True">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
 
-            <TreeView x:Name="ResultTree" Grid.Column="0"
-                      ItemsSource="{Binding RootNodes}"
-                      SelectedItemChanged="ResultTree_SelectedItemChanged"/>
+            <Grid Grid.Row="0" Margin="19,0,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="100" SharedSizeGroup="colProgress"/>
+                    <ColumnDefinition Width="200" SharedSizeGroup="colName"/>
+                    <ColumnDefinition Width="100" SharedSizeGroup="colSubtree"/>
+                    <ColumnDefinition Width="100" SharedSizeGroup="colPercent"/>
+                    <ColumnDefinition Width="80" SharedSizeGroup="colSize"/>
+                    <ColumnDefinition Width="80" SharedSizeGroup="colItems"/>
+                    <ColumnDefinition Width="80" SharedSizeGroup="colFiles"/>
+                    <ColumnDefinition Width="80" SharedSizeGroup="colSubdirs"/>
+                    <ColumnDefinition Width="150" SharedSizeGroup="colLastChanged"/>
+                    <ColumnDefinition Width="100" SharedSizeGroup="colAttributes"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Text="% Parent"/>
+                <TextBlock Grid.Column="1" Text="Name"/>
+                <TextBlock Grid.Column="2" Text="Subtree Percent"/>
+                <TextBlock Grid.Column="3" Text="Percent"/>
+                <TextBlock Grid.Column="4" Text="Size"/>
+                <TextBlock Grid.Column="5" Text="Items"/>
+                <TextBlock Grid.Column="6" Text="Files"/>
+                <TextBlock Grid.Column="7" Text="Subdirs"/>
+                <TextBlock Grid.Column="8" Text="Last Change"/>
+                <TextBlock Grid.Column="9" Text="Attributes"/>
+            </Grid>
 
-            <DataGrid Grid.Column="1" ItemsSource="{Binding SelectedNodeChildren}"
-                      AutoGenerateColumns="False" IsReadOnly="True">
-                <DataGrid.Columns>
-                    <DataGridTemplateColumn Header="Name" Width="200">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
+            <TreeView x:Name="ResultTree" Grid.Row="1" ItemsSource="{Binding RootNodes}">
+                <TreeView.Resources>
+                    <HierarchicalDataTemplate DataType="{x:Type viewModels:DirectoryNodeViewModel}" ItemsSource="{Binding Children}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="100" SharedSizeGroup="colProgress"/>
+                                <ColumnDefinition Width="200" SharedSizeGroup="colName"/>
+                                <ColumnDefinition Width="100" SharedSizeGroup="colSubtree"/>
+                                <ColumnDefinition Width="100" SharedSizeGroup="colPercent"/>
+                                <ColumnDefinition Width="80" SharedSizeGroup="colSize"/>
+                                <ColumnDefinition Width="80" SharedSizeGroup="colItems"/>
+                                <ColumnDefinition Width="80" SharedSizeGroup="colFiles"/>
+                                <ColumnDefinition Width="80" SharedSizeGroup="colSubdirs"/>
+                                <ColumnDefinition Width="150" SharedSizeGroup="colLastChanged"/>
+                                <ColumnDefinition Width="100" SharedSizeGroup="colAttributes"/>
+                            </Grid.ColumnDefinitions>
+                            <ProgressBar Grid.Column="0" Minimum="0" Maximum="1" Value="{Binding PercentOfParent}" Margin="0,2,0,2"/>
+                            <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                <TextBlock FontFamily="Segoe MDL2 Assets" Text="{Binding IconGlyph}" Margin="0,0,4,0"/>
                                 <TextBlock Text="{Binding Name}"/>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-                    <DataGridTextColumn Header="Subtree Percent" Binding="{Binding SubtreePercent, StringFormat={}{0:P2}}"/>
-                    <DataGridTextColumn Header="Percent" Binding="{Binding PercentOfTotal, StringFormat={}{0:P2}}"/>
-                    <DataGridTextColumn Header="Size" Binding="{Binding Size}"/>
-                    <DataGridTextColumn Header="Items" Binding="{Binding TotalItems}"/>
-                    <DataGridTextColumn Header="Files" Binding="{Binding TotalFiles}"/>
-                    <DataGridTextColumn Header="Subdirs" Binding="{Binding TotalSubdirs}"/>
-                    <DataGridTextColumn Header="Last Change" Binding="{Binding LastModified, StringFormat={}{0:G}}"/>
-                    <DataGridTextColumn Header="Attributes" Binding="{Binding Attributes}"/>
-                </DataGrid.Columns>
-            </DataGrid>
+                            </StackPanel>
+                            <TextBlock Grid.Column="2" Text="{Binding SubtreePercent, StringFormat={}{0:P2}}"/>
+                            <TextBlock Grid.Column="3" Text="{Binding PercentOfTotal, StringFormat={}{0:P2}}"/>
+                            <TextBlock Grid.Column="4" Text="{Binding Size}"/>
+                            <TextBlock Grid.Column="5" Text="{Binding TotalItems}"/>
+                            <TextBlock Grid.Column="6" Text="{Binding TotalFiles}"/>
+                            <TextBlock Grid.Column="7" Text="{Binding TotalSubdirs}"/>
+                            <TextBlock Grid.Column="8" Text="{Binding LastModified, StringFormat={}{0:G}}"/>
+                            <TextBlock Grid.Column="9" Text="{Binding Attributes}"/>
+                        </Grid>
+                    </HierarchicalDataTemplate>
+                </TreeView.Resources>
+            </TreeView>
         </Grid>
     </Grid>
 </Window>

@@ -8,6 +8,7 @@ namespace windirstat_s3.ViewModels;
 public class DirectoryNodeViewModel
 {
     private readonly long _totalSize;
+    private readonly long _parentSize;
 
     public string Name { get; }
     public long Size { get; }
@@ -16,9 +17,10 @@ public class DirectoryNodeViewModel
     public DateTime LastModified { get; }
     public ObservableCollection<DirectoryNodeViewModel> Children { get; } = new();
 
-    public DirectoryNodeViewModel(FolderNode node, long totalSize)
+    public DirectoryNodeViewModel(FolderNode node, long totalSize, long parentSize = 0)
     {
         _totalSize = totalSize;
+        _parentSize = parentSize;
         Name = node.Name;
         Size = node.Size;
         OwnSize = node.OwnSize;
@@ -26,7 +28,7 @@ public class DirectoryNodeViewModel
         LastModified = node.LastModified;
         foreach (var child in node.Children.Values.OrderByDescending(c => c.Size))
         {
-            Children.Add(new DirectoryNodeViewModel(child, totalSize));
+            Children.Add(new DirectoryNodeViewModel(child, totalSize, node.Size));
         }
     }
 
@@ -36,4 +38,8 @@ public class DirectoryNodeViewModel
     public int TotalSubdirs => Children.Count;
     public long TotalItems => TotalFiles + TotalSubdirs;
     public string Attributes => string.Empty;
+
+    public double PercentOfParent => _parentSize == 0 ? 1 : (double)Size / _parentSize;
+
+    public string IconGlyph => Children.Any() ? "\uE8B7" : "\uE8A5"; // Folder or Document
 }

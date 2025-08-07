@@ -24,12 +24,6 @@ public partial class MainWindow : Window, INotifyPropertyChanged
     private Stopwatch? _stopwatch;
 
     public ObservableCollection<DirectoryNodeViewModel> RootNodes { get; } = new();
-    private ObservableCollection<DirectoryNodeViewModel> _selectedNodeChildren = new();
-    public ObservableCollection<DirectoryNodeViewModel> SelectedNodeChildren
-    {
-        get => _selectedNodeChildren;
-        set { _selectedNodeChildren = value; OnPropertyChanged(nameof(SelectedNodeChildren)); }
-    }
 
     private double _progressPercent;
     public double ProgressPercent
@@ -102,7 +96,6 @@ public partial class MainWindow : Window, INotifyPropertyChanged
             var rootView = new DirectoryNodeViewModel(_result, _result.Size);
             RootNodes.Clear();
             RootNodes.Add(rootView);
-            SelectedNodeChildren = new ObservableCollection<DirectoryNodeViewModel>(rootView.Children);
         }
         catch (OperationCanceledException)
         {
@@ -160,14 +153,6 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         catch (Exception ex)
         {
             MessageBox.Show(ex.Message, "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
-        }
-    }
-
-    private void ResultTree_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
-    {
-        if (ResultTree.SelectedItem is DirectoryNodeViewModel node)
-        {
-            SelectedNodeChildren = new ObservableCollection<DirectoryNodeViewModel>(node.Children);
         }
     }
 
