@@ -1,7 +1,7 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
-using windirstat_s3.Services;
+using Windirstat.Core.Models;
 
 namespace windirstat_s3.ViewModels;
 

@@ -1,7 +1,8 @@
-using System.Text.Json;
 using System.IO;
+using System.Text.Json;
+using Windirstat.Core.Models;
 
-namespace windirstat_s3.Services;
+namespace Windirstat.Core;
 
 public static class ReportExporter
 {

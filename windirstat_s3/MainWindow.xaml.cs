@@ -11,6 +11,8 @@ using Amazon.S3;
 using Microsoft.Win32;
 using windirstat_s3.Services;
 using windirstat_s3.ViewModels;
+using Windirstat.Core;
+using Windirstat.Core.Models;
 
 namespace windirstat_s3;
 

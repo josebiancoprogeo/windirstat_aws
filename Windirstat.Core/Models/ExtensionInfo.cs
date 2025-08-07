@@ -1,4 +1,4 @@
-namespace windirstat_s3.Services;
+namespace Windirstat.Core.Models;
 
 public class ExtensionInfo
 {
