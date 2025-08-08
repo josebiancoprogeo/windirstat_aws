@@ -32,9 +32,8 @@
 
             <Grid Grid.Row="0" Margin="19,0,0,0">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="100" SharedSizeGroup="colProgress"/>
                     <ColumnDefinition Width="200" SharedSizeGroup="colName"/>
-                    <ColumnDefinition Width="100" SharedSizeGroup="colSubtree"/>
+                    <ColumnDefinition Width="100" SharedSizeGroup="colProgress"/>
                     <ColumnDefinition Width="100" SharedSizeGroup="colPercent"/>
                     <ColumnDefinition Width="80" SharedSizeGroup="colSize"/>
                     <ColumnDefinition Width="80" SharedSizeGroup="colItems"/>
@@ -43,16 +42,15 @@
                     <ColumnDefinition Width="150" SharedSizeGroup="colLastChanged"/>
                     <ColumnDefinition Width="100" SharedSizeGroup="colAttributes"/>
                 </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" Text="% Parent"/>
-                <TextBlock Grid.Column="1" Text="Name"/>
-                <TextBlock Grid.Column="2" Text="Subtree Percent"/>
-                <TextBlock Grid.Column="3" Text="Percent"/>
-                <TextBlock Grid.Column="4" Text="Size"/>
-                <TextBlock Grid.Column="5" Text="Items"/>
-                <TextBlock Grid.Column="6" Text="Files"/>
-                <TextBlock Grid.Column="7" Text="Subdirs"/>
-                <TextBlock Grid.Column="8" Text="Last Change"/>
-                <TextBlock Grid.Column="9" Text="Attributes"/>
+                <TextBlock Grid.Column="0" Text="Name"/>
+                <TextBlock Grid.Column="1" Text="% Parent"/>
+                <TextBlock Grid.Column="2" Text="Percent"/>
+                <TextBlock Grid.Column="3" Text="Size"/>
+                <TextBlock Grid.Column="4" Text="Items"/>
+                <TextBlock Grid.Column="5" Text="Files"/>
+                <TextBlock Grid.Column="6" Text="Subdirs"/>
+                <TextBlock Grid.Column="7" Text="Last Change"/>
+                <TextBlock Grid.Column="8" Text="Attributes"/>
             </Grid>
 
             <TreeView x:Name="ResultTree" Grid.Row="1" ItemsSource="{Binding RootNodes}">
@@ -60,9 +58,8 @@
                     <HierarchicalDataTemplate DataType="{x:Type viewModels:DirectoryNodeViewModel}" ItemsSource="{Binding Children}">
                         <Grid>
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="100" SharedSizeGroup="colProgress"/>
                                 <ColumnDefinition Width="200" SharedSizeGroup="colName"/>
-                                <ColumnDefinition Width="100" SharedSizeGroup="colSubtree"/>
+                                <ColumnDefinition Width="100" SharedSizeGroup="colProgress"/>
                                 <ColumnDefinition Width="100" SharedSizeGroup="colPercent"/>
                                 <ColumnDefinition Width="80" SharedSizeGroup="colSize"/>
                                 <ColumnDefinition Width="80" SharedSizeGroup="colItems"/>
@@ -71,19 +68,18 @@
                                 <ColumnDefinition Width="150" SharedSizeGroup="colLastChanged"/>
                                 <ColumnDefinition Width="100" SharedSizeGroup="colAttributes"/>
                             </Grid.ColumnDefinitions>
-                            <ProgressBar Grid.Column="0" Minimum="0" Maximum="1" Value="{Binding PercentOfParent, Mode=OneWay}" Margin="0,2,0,2"/>
-                            <StackPanel Grid.Column="1" Orientation="Horizontal">
+                            <StackPanel Grid.Column="0" Orientation="Horizontal">
                                 <TextBlock FontFamily="Segoe MDL2 Assets" Text="{Binding IconGlyph}" Margin="0,0,4,0"/>
                                 <TextBlock Text="{Binding Name}"/>
                             </StackPanel>
-                            <TextBlock Grid.Column="2" Text="{Binding SubtreePercent, StringFormat={}{0:P2}}"/>
-                            <TextBlock Grid.Column="3" Text="{Binding PercentOfTotal, StringFormat={}{0:P2}}"/>
-                            <TextBlock Grid.Column="4" Text="{Binding Size}"/>
-                            <TextBlock Grid.Column="5" Text="{Binding TotalItems}"/>
-                            <TextBlock Grid.Column="6" Text="{Binding TotalFiles}"/>
-                            <TextBlock Grid.Column="7" Text="{Binding TotalSubdirs}"/>
-                            <TextBlock Grid.Column="8" Text="{Binding LastModified, StringFormat={}{0:G}}"/>
-                            <TextBlock Grid.Column="9" Text="{Binding Attributes}"/>
+                            <ProgressBar Grid.Column="1" Minimum="0" Maximum="1" Value="{Binding PercentOfParent, Mode=OneWay}" Margin="0,2,0,2"/>
+                            <TextBlock Grid.Column="2" Text="{Binding PercentOfParent, StringFormat={}{0:P2}}"/>
+                            <TextBlock Grid.Column="3" Text="{Binding FriendlySize}"/>
+                            <TextBlock Grid.Column="4" Text="{Binding TotalItems}"/>
+                            <TextBlock Grid.Column="5" Text="{Binding TotalFiles}"/>
+                            <TextBlock Grid.Column="6" Text="{Binding TotalSubdirs}"/>
+                            <TextBlock Grid.Column="7" Text="{Binding LastModified, StringFormat={}{0:G}}"/>
+                            <TextBlock Grid.Column="8" Text="{Binding Attributes}"/>
                         </Grid>
                     </HierarchicalDataTemplate>
                 </TreeView.Resources>

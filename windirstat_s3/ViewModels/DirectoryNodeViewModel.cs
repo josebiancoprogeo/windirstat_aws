@@ -12,6 +12,7 @@ public class DirectoryNodeViewModel
 
     public string Name { get; }
     public long Size { get; }
+    public string FriendlySize => FormatBytes(Size);
     public long OwnSize { get; }
     public long FileCount { get; }
     public DateTime LastModified { get; }
@@ -42,4 +43,17 @@ public class DirectoryNodeViewModel
     public double PercentOfParent => _parentSize == 0 ? 1 : (double)Size / _parentSize;
 
     public string IconGlyph => Children.Any() ? "\uE8B7" : "\uE8A5"; // Folder or Document
+
+    private static string FormatBytes(long bytes)
+    {
+        string[] sizes = { "B", "KB", "MB", "GB", "TB" };
+        double len = bytes;
+        int order = 0;
+        while (len >= 1024 && order < sizes.Length - 1)
+        {
+            order++;
+            len /= 1024;
+        }
+        return $"{len:0.##} {sizes[order]}";
+    }
 }
