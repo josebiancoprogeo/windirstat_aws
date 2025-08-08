@@ -13,8 +13,10 @@ public class FolderNode
     public Dictionary<string, FolderNode> Children { get; } = new();
     public Dictionary<string, ExtensionInfo> Extensions { get; } = new();
 
-    public FolderNode(string name)
+    public bool IsFile { get; }
+    public FolderNode(string name, bool isFile = false)
     {
         Name = name;
+        IsFile = isFile;
     }
 }
