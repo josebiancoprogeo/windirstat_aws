@@ -126,7 +126,20 @@ public class S3Scanner
 
             UpdateExtension(node, extension, size);
         }
+
         node.OwnSize += size;
+
+        var fileName = parts[^1];
+        var fileNode = new FolderNode(fileName, isFile: true)
+        {
+            Size = size,
+            OwnSize = size,
+            FileCount = 1,
+            LastModified = lastModified
+        };
+        node.Children[fileName] = fileNode;
+
+        UpdateExtension(fileNode, extension, size);
     }
 
     private static void UpdateExtension(FolderNode node, string extension, long size)
