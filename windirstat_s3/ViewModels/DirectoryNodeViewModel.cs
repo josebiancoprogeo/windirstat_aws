@@ -18,18 +18,23 @@ public class DirectoryNodeViewModel
     public DateTime LastModified { get; }
     public ObservableCollection<DirectoryNodeViewModel> Children { get; } = new();
 
-    public DirectoryNodeViewModel(FolderNode node, long totalSize, long parentSize = 0)
+    public bool IsFile { get; }
+    public int Depth { get; }
+
+    public DirectoryNodeViewModel(FolderNode node, long totalSize, long parentSize = 0, int depth = 0)
     {
         _totalSize = totalSize;
         _parentSize = parentSize;
+        Depth = depth;
         Name = node.Name;
         Size = node.Size;
         OwnSize = node.OwnSize;
         FileCount = node.FileCount;
         LastModified = node.LastModified;
+        IsFile = node.IsFile;
         foreach (var child in node.Children.Values.OrderByDescending(c => c.Size))
         {
-            Children.Add(new DirectoryNodeViewModel(child, totalSize, node.Size));
+            Children.Add(new DirectoryNodeViewModel(child, totalSize, node.Size, depth + 1));
         }
     }
 
@@ -42,7 +47,7 @@ public class DirectoryNodeViewModel
 
     public double PercentOfParent => _parentSize == 0 ? 1 : (double)Size / _parentSize;
 
-    public string IconGlyph => Children.Any() ? "\uE8B7" : "\uE8A5"; // Folder or Document
+    public string IconGlyph => IsFile ? "\uE8A5" : "\uE8B7"; // Document or Folder
 
     private static string FormatBytes(long bytes)
     {
