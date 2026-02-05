@@ -31,17 +31,17 @@
           }
         }
       },
-      "System.Windows.Controls.DataVisualization.Toolkit/4.0.0": {
-        "type": "package",
+      "Windirstat.Core/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v8.0",
+        "dependencies": {
+          "AWSSDK.S3": "4.0.6.3"
+        },
         "compile": {
-          "lib/net40-Client/System.Windows.Controls.DataVisualization.Toolkit.dll": {
-            "related": ".XML"
-          }
+          "bin/placeholder/Windirstat.Core.dll": {}
         },
         "runtime": {
-          "lib/net40-Client/System.Windows.Controls.DataVisualization.Toolkit.dll": {
-            "related": ".XML"
-          }
+          "bin/placeholder/Windirstat.Core.dll": {}
         }
       }
     }
@@ -102,24 +102,16 @@
         "tools/uninstall.ps1"
       ]
     },
-    "System.Windows.Controls.DataVisualization.Toolkit/4.0.0": {
-      "sha512": "UqBiEXh2YmYdJE5BpJC9c1I+AzcmFlzZ1h7fn5iU2lhOLn3snSxqf46/2XHpoJetJBN4HAavqG77wzaBi5jxfQ==",
-      "type": "package",
-      "path": "system.windows.controls.datavisualization.toolkit/4.0.0",
-      "files": [
-        ".nupkg.metadata",
-        ".signature.p7s",
-        "lib/net40-Client/System.Windows.Controls.DataVisualization.Toolkit.XML",
-        "lib/net40-Client/System.Windows.Controls.DataVisualization.Toolkit.dll",
-        "system.windows.controls.datavisualization.toolkit.4.0.0.nupkg.sha512",
-        "system.windows.controls.datavisualization.toolkit.nuspec"
-      ]
+    "Windirstat.Core/1.0.0": {
+      "type": "project",
+      "path": "../Windirstat.Core/Windirstat.Core.csproj",
+      "msbuildProject": "../Windirstat.Core/Windirstat.Core.csproj"
     }
   },
   "projectFileDependencyGroups": {
     "net8.0-windows7.0": [
       "AWSSDK.S3 >= 4.0.6.3",
-      "System.Windows.Controls.DataVisualization.Toolkit >= 3.5.50211.1"
+      "Windirstat.Core >= 1.0.0"
     ]
   },
   "packageFolders": {
@@ -149,7 +141,11 @@
       "frameworks": {
         "net8.0-windows7.0": {
           "targetAlias": "net8.0-windows",
-          "projectReferences": {}
+          "projectReferences": {
+            "D:\\Gdrive\\CODIGO FONTE\\PROGEO\\windirstat_s3\\windirstat_aws\\Windirstat.Core\\Windirstat.Core.csproj": {
+              "projectPath": "D:\\Gdrive\\CODIGO FONTE\\PROGEO\\windirstat_s3\\windirstat_aws\\Windirstat.Core\\Windirstat.Core.csproj"
+            }
+          }
         }
       },
       "warningProperties": {
@@ -170,10 +166,6 @@
           "AWSSDK.S3": {
             "target": "Package",
             "version": "[4.0.6.3, )"
-          },
-          "System.Windows.Controls.DataVisualization.Toolkit": {
-            "target": "Package",
-            "version": "[3.5.50211.1, )"
           }
         },
         "imports": [
@@ -198,27 +190,5 @@
         "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.403/PortableRuntimeIdentifierGraph.json"
       }
     }
-  },
-  "logs": [
-    {
-      "code": "NU1603",
-      "level": "Warning",
-      "warningLevel": 1,
-      "message": "windirstat_s3 depende de System.Windows.Controls.DataVisualization.Toolkit (>= 3.5.50211.1), mas System.Windows.Controls.DataVisualization.Toolkit 3.5.50211.1 não foi encontrado. A melhor correspondência aproximada de System.Windows.Controls.DataVisualization.Toolkit 4.0.0 foi resolvida.",
-      "libraryId": "System.Windows.Controls.DataVisualization.Toolkit",
-      "targetGraphs": [
-        "net8.0-windows7.0"
-      ]
-    },
-    {
-      "code": "NU1701",
-      "level": "Warning",
-      "warningLevel": 1,
-      "message": "O pacote 'System.Windows.Controls.DataVisualization.Toolkit 4.0.0' foi restaurado usando '.NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8, .NETFramework,Version=v4.8.1' em vez da estrutura de destino do projeto 'net8.0-windows7.0'. Esse pacote pode não ser totalmente compatível com o seu projeto.",
-      "libraryId": "System.Windows.Controls.DataVisualization.Toolkit",
-      "targetGraphs": [
-        "net8.0-windows7.0"
-      ]
-    }
-  ]
+  }
 }

@@ -1,33 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "4xkR8YxnnRI=",
+  "dgSpecHash": "gms8tgK8cIM=",
   "success": true,
   "projectFilePath": "D:\\Gdrive\\CODIGO FONTE\\PROGEO\\windirstat_s3\\windirstat_aws\\windirstat_s3\\windirstat_s3.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\TPRG17153\\.nuget\\packages\\awssdk.core\\4.0.0.20\\awssdk.core.4.0.0.20.nupkg.sha512",
-    "C:\\Users\\TPRG17153\\.nuget\\packages\\awssdk.s3\\4.0.6.3\\awssdk.s3.4.0.6.3.nupkg.sha512",
-    "C:\\Users\\TPRG17153\\.nuget\\packages\\system.windows.controls.datavisualization.toolkit\\4.0.0\\system.windows.controls.datavisualization.toolkit.4.0.0.nupkg.sha512"
+    "C:\\Users\\TPRG17153\\.nuget\\packages\\awssdk.s3\\4.0.6.3\\awssdk.s3.4.0.6.3.nupkg.sha512"
   ],
-  "logs": [
-    {
-      "code": "NU1603",
-      "level": "Warning",
-      "warningLevel": 1,
-      "message": "windirstat_s3 depende de System.Windows.Controls.DataVisualization.Toolkit (>= 3.5.50211.1), mas System.Windows.Controls.DataVisualization.Toolkit 3.5.50211.1 não foi encontrado. A melhor correspondência aproximada de System.Windows.Controls.DataVisualization.Toolkit 4.0.0 foi resolvida.",
-      "libraryId": "System.Windows.Controls.DataVisualization.Toolkit",
-      "targetGraphs": [
-        "net8.0-windows7.0"
-      ]
-    },
-    {
-      "code": "NU1701",
-      "level": "Warning",
-      "warningLevel": 1,
-      "message": "O pacote 'System.Windows.Controls.DataVisualization.Toolkit 4.0.0' foi restaurado usando '.NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8, .NETFramework,Version=v4.8.1' em vez da estrutura de destino do projeto 'net8.0-windows7.0'. Esse pacote pode não ser totalmente compatível com o seu projeto.",
-      "libraryId": "System.Windows.Controls.DataVisualization.Toolkit",
-      "targetGraphs": [
-        "net8.0-windows7.0"
-      ]
-    }
-  ]
+  "logs": []
 }

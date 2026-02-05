@@ -24,14 +24,6 @@
             "fileVersion": "4.0.6.3"
           }
         }
-      },
-      "System.Windows.Controls.DataVisualization.Toolkit/4.0.0": {
-        "runtime": {
-          "lib/net40-Client/System.Windows.Controls.DataVisualization.Toolkit.dll": {
-            "assemblyVersion": "4.0.0.0",
-            "fileVersion": "4.0.0.0"
-          }
-        }
       }
     }
   },
@@ -49,13 +41,6 @@
       "sha512": "sha512-8YCw9Ti0GyrsSkUtcxWkTFFZ0tJVeC8N1gTHGOSPy6rm0C7ivysJ+c5F9++KCdoHTXMv54q8IO12fy6e52fQvg==",
       "path": "awssdk.s3/4.0.6.3",
       "hashPath": "awssdk.s3.4.0.6.3.nupkg.sha512"
-    },
-    "System.Windows.Controls.DataVisualization.Toolkit/4.0.0": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-UqBiEXh2YmYdJE5BpJC9c1I+AzcmFlzZ1h7fn5iU2lhOLn3snSxqf46/2XHpoJetJBN4HAavqG77wzaBi5jxfQ==",
-      "path": "system.windows.controls.datavisualization.toolkit/4.0.0",
-      "hashPath": "system.windows.controls.datavisualization.toolkit.4.0.0.nupkg.sha512"
     }
   }
 }

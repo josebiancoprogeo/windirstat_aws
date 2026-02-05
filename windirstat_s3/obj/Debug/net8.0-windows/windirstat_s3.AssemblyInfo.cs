@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("windirstat_s3")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+577de39086b4d2629445932f83ee4caf6ea7cddf")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+850bdf85ca345b29fa0e04a4e4180d4697fe02af")]
 [assembly: System.Reflection.AssemblyProductAttribute("windirstat_s3")]
 [assembly: System.Reflection.AssemblyTitleAttribute("windirstat_s3")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
