@@ -1,0 +1,65 @@
+<Window x:Class="windirstat_s3.SyncWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Sincronizar S3" Height="320" Width="620"
+        WindowStartupLocation="CenterOwner">
+    <Grid Margin="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,8">
+            <TextBlock Text="Perfil:" VerticalAlignment="Center"/>
+            <ComboBox x:Name="ProfileComboBox" Width="160" Margin="6,0,0,0" SelectionChanged="ProfileComboBox_SelectionChanged"/>
+            <TextBlock Text="Bucket:" Margin="12,0,0,0" VerticalAlignment="Center"/>
+            <ComboBox x:Name="BucketComboBox" Width="200" Margin="6,0,0,0"/>
+        </StackPanel>
+
+        <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="0,0,0,8">
+            <TextBlock Text="Pasta S3 (prefixo):" Width="140" VerticalAlignment="Center"/>
+            <TextBox x:Name="PrefixTextBox" Width="320" ToolTip="Exemplo: pasta/subpasta"/>
+            <Button Content="Selecionar..." Margin="6,0,0,0" Click="BrowsePrefixButton_Click"/>
+        </StackPanel>
+
+        <StackPanel Orientation="Horizontal" Grid.Row="2" Margin="0,0,0,8">
+            <TextBlock Text="Pasta local:" Width="140" VerticalAlignment="Center"/>
+            <TextBox x:Name="LocalFolderTextBox" Width="340"/>
+            <Button Content="Selecionar..." Margin="6,0,0,0" Click="BrowseLocalButton_Click"/>
+        </StackPanel>
+
+        <StackPanel Orientation="Horizontal" Grid.Row="3" Margin="0,0,0,8">
+            <TextBlock Text="Threads:" Width="140" VerticalAlignment="Center"/>
+            <TextBox x:Name="ThreadsTextBox" Width="60" Text="8" ToolTip="1 a 64"/>
+        </StackPanel>
+
+        <StackPanel Orientation="Horizontal" Grid.Row="4" Margin="0,0,0,8">
+            <Button x:Name="SyncButton" Content="Sincronizar" Width="120" Click="SyncButton_Click"/>
+            <TextBlock Text="{Binding StatusMessage}" Margin="10,0,0,0" VerticalAlignment="Center"/>
+        </StackPanel>
+
+        <StackPanel Orientation="Horizontal" Grid.Row="5" Margin="0,0,0,6">
+            <TextBlock Text="Total:" VerticalAlignment="Center"/>
+            <TextBlock Text="{Binding TotalFiles}" Margin="6,0,12,0" VerticalAlignment="Center"/>
+            <TextBlock Text="Baixados:" VerticalAlignment="Center"/>
+            <TextBlock Text="{Binding DownloadedFiles}" Margin="6,0,12,0" VerticalAlignment="Center"/>
+            <TextBlock Text="Ignorados:" VerticalAlignment="Center"/>
+            <TextBlock Text="{Binding SkippedFiles}" Margin="6,0,12,0" VerticalAlignment="Center"/>
+            <TextBlock Text="Faltam:" VerticalAlignment="Center"/>
+            <TextBlock Text="{Binding RemainingFiles}" Margin="6,0,12,0" VerticalAlignment="Center"/>
+            <TextBlock Text="Velocidade:" VerticalAlignment="Center"/>
+            <TextBlock Text="{Binding SpeedText}" Margin="6,0,12,0" VerticalAlignment="Center"/>
+            <TextBlock Text="ETA:" VerticalAlignment="Center"/>
+            <TextBlock Text="{Binding EtaText}" Margin="6,0,0,0" VerticalAlignment="Center"/>
+        </StackPanel>
+
+        <ProgressBar Grid.Row="6" Height="18" Minimum="0" Maximum="100" Value="{Binding ProgressPercent}"/>
+        <TextBlock Grid.Row="7" Text="{Binding ProgressPercent, StringFormat={}{0:F1}%}" HorizontalAlignment="Right" VerticalAlignment="Top"/>
+    </Grid>
+</Window>

@@ -28,3 +28,7 @@ D:\Gdrive\CODIGO FONTE\PROGEO\windirstat_s3\windirstat_aws\windirstat_s3\obj\Deb
 D:\Gdrive\CODIGO FONTE\PROGEO\windirstat_s3\windirstat_aws\windirstat_s3\obj\Debug\net8.0-windows\windirstat_s3.pdb
 D:\Gdrive\CODIGO FONTE\PROGEO\windirstat_s3\windirstat_aws\windirstat_s3\obj\Debug\net8.0-windows\windirstat_s3.genruntimeconfig.cache
 D:\Gdrive\CODIGO FONTE\PROGEO\windirstat_s3\windirstat_aws\windirstat_s3\obj\Debug\net8.0-windows\ref\windirstat_s3.dll
+D:\Gdrive\CODIGO FONTE\PROGEO\windirstat_s3\windirstat_aws\windirstat_s3\obj\Debug\net8.0-windows\SyncWindow.baml
+D:\Gdrive\CODIGO FONTE\PROGEO\windirstat_s3\windirstat_aws\windirstat_s3\obj\Debug\net8.0-windows\SyncWindow.g.cs
+D:\Gdrive\CODIGO FONTE\PROGEO\windirstat_s3\windirstat_aws\windirstat_s3\obj\Debug\net8.0-windows\S3PrefixPickerWindow.baml
+D:\Gdrive\CODIGO FONTE\PROGEO\windirstat_s3\windirstat_aws\windirstat_s3\obj\Debug\net8.0-windows\S3PrefixPickerWindow.g.cs

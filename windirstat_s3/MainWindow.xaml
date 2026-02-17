@@ -22,6 +22,7 @@
             <TextBlock Text="Ignorar Prefixos:" Margin="10,0,0,0" VerticalAlignment="Center"/>
             <TextBox x:Name="IgnorePrefixesTextBox" Width="150" Margin="5,0,0,0" ToolTip="Separe por vírgulas"/>
             <Button Content="Scan" Margin="10,0,0,0" Click="ScanButton_Click"/>
+            <Button Content="Sync" Margin="10,0,0,0" Click="OpenSyncButton_Click"/>
             <Button x:Name="CancelButton" Content="Cancelar" Margin="10,0,0,0" Click="CancelButton_Click" IsEnabled="False"/>
             <Button Content="Export CSV" Margin="10,0,0,0" Click="ExportCsvButton_Click"/>
             <Button Content="Export JSON" Margin="5,0,0,0" Click="ExportJsonButton_Click"/>

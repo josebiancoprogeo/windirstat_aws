@@ -74,7 +74,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
 
         if (string.IsNullOrWhiteSpace(profileName) || string.IsNullOrWhiteSpace(bucketName))
         {
-            MessageBox.Show("Selecione um perfil e informe o nome do bucket.");
+            System.Windows.MessageBox.Show("Selecione um perfil e informe o nome do bucket.");
             return;
         }
 
@@ -99,11 +99,11 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         }
         catch (OperationCanceledException)
         {
-            MessageBox.Show("Varredura cancelada.");
+            System.Windows.MessageBox.Show("Varredura cancelada.");
         }
         catch (Exception ex)
         {
-            MessageBox.Show(ex.Message, "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
+            System.Windows.MessageBox.Show(ex.Message, "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
         }
         finally
         {
@@ -152,7 +152,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         }
         catch (Exception ex)
         {
-            MessageBox.Show(ex.Message, "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
+            System.Windows.MessageBox.Show(ex.Message, "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 
@@ -160,11 +160,11 @@ public partial class MainWindow : Window, INotifyPropertyChanged
     {
         if (_result == null)
         {
-            MessageBox.Show("Nenhum resultado para exportar.");
+            System.Windows.MessageBox.Show("Nenhum resultado para exportar.");
             return;
         }
 
-        var dialog = new SaveFileDialog { Filter = "CSV files (*.csv)|*.csv" };
+        var dialog = new Microsoft.Win32.SaveFileDialog { Filter = "CSV files (*.csv)|*.csv" };
         if (dialog.ShowDialog() == true)
         {
             ReportExporter.ToCsv(_result, dialog.FileName);
@@ -175,14 +175,20 @@ public partial class MainWindow : Window, INotifyPropertyChanged
     {
         if (_result == null)
         {
-            MessageBox.Show("Nenhum resultado para exportar.");
+            System.Windows.MessageBox.Show("Nenhum resultado para exportar.");
             return;
         }
 
-        var dialog = new SaveFileDialog { Filter = "JSON files (*.json)|*.json" };
+        var dialog = new Microsoft.Win32.SaveFileDialog { Filter = "JSON files (*.json)|*.json" };
         if (dialog.ShowDialog() == true)
         {
             ReportExporter.ToJson(_result, dialog.FileName);
         }
+    }
+
+    private void OpenSyncButton_Click(object sender, RoutedEventArgs e)
+    {
+        var window = new SyncWindow { Owner = this };
+        window.ShowDialog();
     }
 }

@@ -21,7 +21,7 @@ public partial class CredentialsWindow : Window
     {
         if (string.IsNullOrWhiteSpace(AccessKeyId) || string.IsNullOrWhiteSpace(SecretAccessKey) || SelectedRegion == null)
         {
-            MessageBox.Show("Informe a chave, segredo e região.");
+            System.Windows.MessageBox.Show("Informe a chave, segredo e região.");
             return;
         }
         DialogResult = true;
