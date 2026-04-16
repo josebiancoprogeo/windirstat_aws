@@ -7,16 +7,20 @@
       "RelativeMoniker": "D:0:0:{A913EAD1-C01B-46DE-8B5E-9814D8EDC19F}|windirstat_s3.csproj|solutionrelative:services\\s3syncservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A913EAD1-C01B-46DE-8B5E-9814D8EDC19F}|windirstat_s3.csproj|d:\\gdrive\\codigo fonte\\progeo\\windirstat_s3\\windirstat_aws\\windirstat_s3\\viewmodels\\directorynodeviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A913EAD1-C01B-46DE-8B5E-9814D8EDC19F}|windirstat_s3.csproj|solutionrelative:viewmodels\\directorynodeviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{A913EAD1-C01B-46DE-8B5E-9814D8EDC19F}|windirstat_s3.csproj|d:\\gdrive\\codigo fonte\\progeo\\windirstat_s3\\windirstat_aws\\windirstat_s3\\syncwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A913EAD1-C01B-46DE-8B5E-9814D8EDC19F}|windirstat_s3.csproj|solutionrelative:syncwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A913EAD1-C01B-46DE-8B5E-9814D8EDC19F}|windirstat_s3.csproj|d:\\gdrive\\codigo fonte\\progeo\\windirstat_s3\\windirstat_aws\\windirstat_s3\\syncwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{A913EAD1-C01B-46DE-8B5E-9814D8EDC19F}|windirstat_s3.csproj|solutionrelative:syncwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{A913EAD1-C01B-46DE-8B5E-9814D8EDC19F}|windirstat_s3.csproj|d:\\gdrive\\codigo fonte\\progeo\\windirstat_s3\\windirstat_aws\\windirstat_s3\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{A913EAD1-C01B-46DE-8B5E-9814D8EDC19F}|windirstat_s3.csproj|solutionrelative:mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A913EAD1-C01B-46DE-8B5E-9814D8EDC19F}|windirstat_s3.csproj|d:\\gdrive\\codigo fonte\\progeo\\windirstat_s3\\windirstat_aws\\windirstat_s3\\app.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A913EAD1-C01B-46DE-8B5E-9814D8EDC19F}|windirstat_s3.csproj|solutionrelative:app.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{A913EAD1-C01B-46DE-8B5E-9814D8EDC19F}|windirstat_s3.csproj|d:\\gdrive\\codigo fonte\\progeo\\windirstat_s3\\windirstat_aws\\windirstat_s3\\viewmodels\\directorynodeviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A913EAD1-C01B-46DE-8B5E-9814D8EDC19F}|windirstat_s3.csproj|solutionrelative:viewmodels\\directorynodeviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{A913EAD1-C01B-46DE-8B5E-9814D8EDC19F}|windirstat_s3.csproj|d:\\gdrive\\codigo fonte\\progeo\\windirstat_s3\\windirstat_aws\\windirstat_s3\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
@@ -37,19 +41,15 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 3,
+          "SelectedChildIndex": 2,
           "Children": [
-            {
-              "$type": "Bookmark",
-              "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
-            },
             {
               "$type": "Bookmark",
               "Name": "ST:128:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
             },
             {
               "$type": "Bookmark",
-              "Name": "ST:0:0:{25f7e850-ffa1-11d0-b63f-00a0c922e851}"
+              "Name": "ST:0:0:{e5c86464-96be-4d7c-9a8b-abcb3bbf5f92}"
             },
             {
               "$type": "Document",
@@ -59,27 +59,37 @@
               "RelativeDocumentMoniker": "Services\\S3SyncService.cs",
               "ToolTip": "D:\\Gdrive\\CODIGO FONTE\\PROGEO\\windirstat_s3\\windirstat_aws\\windirstat_s3\\Services\\S3SyncService.cs",
               "RelativeToolTip": "Services\\S3SyncService.cs",
-              "ViewState": "AgIAAKoAAAAAAAAAAAAiwLUAAAA+AAAAAAAAAA==",
+              "ViewState": "AgIAAPcAAAAAAAAAAAAQwAoBAAA8AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-05T14:38:05.165Z",
+              "WhenOpened": "2026-04-09T12:45:48.228Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "App.xaml.cs",
-              "DocumentMoniker": "D:\\Gdrive\\CODIGO FONTE\\PROGEO\\windirstat_s3\\windirstat_aws\\windirstat_s3\\App.xaml.cs",
-              "RelativeDocumentMoniker": "App.xaml.cs",
-              "ToolTip": "D:\\Gdrive\\CODIGO FONTE\\PROGEO\\windirstat_s3\\windirstat_aws\\windirstat_s3\\App.xaml.cs",
-              "RelativeToolTip": "App.xaml.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAAAAAAAAAAAAA==",
+              "DocumentIndex": 1,
+              "Title": "SyncWindow.xaml.cs",
+              "DocumentMoniker": "D:\\Gdrive\\CODIGO FONTE\\PROGEO\\windirstat_s3\\windirstat_aws\\windirstat_s3\\SyncWindow.xaml.cs",
+              "RelativeDocumentMoniker": "SyncWindow.xaml.cs",
+              "ToolTip": "D:\\Gdrive\\CODIGO FONTE\\PROGEO\\windirstat_s3\\windirstat_aws\\windirstat_s3\\SyncWindow.xaml.cs",
+              "RelativeToolTip": "SyncWindow.xaml.cs",
+              "ViewState": "AgIAAHcAAAAAAAAAAAAAAFEAAAAFAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-05T14:28:53.777Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-02-17T12:48:38.757Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 2,
+              "Title": "SyncWindow.xaml",
+              "DocumentMoniker": "D:\\Gdrive\\CODIGO FONTE\\PROGEO\\windirstat_s3\\windirstat_aws\\windirstat_s3\\SyncWindow.xaml",
+              "RelativeDocumentMoniker": "SyncWindow.xaml",
+              "ToolTip": "D:\\Gdrive\\CODIGO FONTE\\PROGEO\\windirstat_s3\\windirstat_aws\\windirstat_s3\\SyncWindow.xaml",
+              "RelativeToolTip": "SyncWindow.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2026-02-17T12:48:30.556Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
               "Title": "XamlReader.cs",
               "DocumentMoniker": "C:\\Users\\TPRG17153\\AppData\\Local\\Temp\\.vsdbgsrc\\00f9257c420475d0b9f0e9a404b60217c997df831d85c8cdcdf9214bf02ae594\\XamlReader.cs",
               "ToolTip": "C:\\Users\\TPRG17153\\AppData\\Local\\Temp\\.vsdbgsrc\\00f9257c420475d0b9f0e9a404b60217c997df831d85c8cdcdf9214bf02ae594\\XamlReader.cs [Somente Leitura]",
@@ -90,7 +100,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 5,
               "Title": "MainWindow.xaml",
               "DocumentMoniker": "D:\\Gdrive\\CODIGO FONTE\\PROGEO\\windirstat_s3\\windirstat_aws\\windirstat_s3\\MainWindow.xaml",
               "RelativeDocumentMoniker": "MainWindow.xaml",
@@ -101,20 +111,19 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 3,
               "Title": "MainWindow.xaml.cs",
               "DocumentMoniker": "D:\\Gdrive\\CODIGO FONTE\\PROGEO\\windirstat_s3\\windirstat_aws\\windirstat_s3\\MainWindow.xaml.cs",
               "RelativeDocumentMoniker": "MainWindow.xaml.cs",
               "ToolTip": "D:\\Gdrive\\CODIGO FONTE\\PROGEO\\windirstat_s3\\windirstat_aws\\windirstat_s3\\MainWindow.xaml.cs",
               "RelativeToolTip": "MainWindow.xaml.cs",
-              "ViewState": "AgIAAGIAAAAAAAAAAAAiwL8AAAAIAAAAAAAAAA==",
+              "ViewState": "AgIAALEAAAAAAAAAAIAwwMIAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-08-06T14:46:35.537Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-08-06T14:46:35.537Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 7,
               "Title": "AwsProfileManager.cs",
               "DocumentMoniker": "D:\\Gdrive\\CODIGO FONTE\\PROGEO\\windirstat_s3\\windirstat_aws\\windirstat_s3\\Services\\AwsProfileManager.cs",
               "RelativeDocumentMoniker": "Services\\AwsProfileManager.cs",
@@ -126,7 +135,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 4,
               "Title": "DirectoryNodeViewModel.cs",
               "DocumentMoniker": "D:\\Gdrive\\CODIGO FONTE\\PROGEO\\windirstat_s3\\windirstat_aws\\windirstat_s3\\ViewModels\\DirectoryNodeViewModel.cs",
               "RelativeDocumentMoniker": "ViewModels\\DirectoryNodeViewModel.cs",
@@ -134,8 +143,7 @@
               "RelativeToolTip": "ViewModels\\DirectoryNodeViewModel.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABIAAABSAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-08-06T20:32:35.734Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-08-06T20:32:35.734Z"
             }
           ]
         }

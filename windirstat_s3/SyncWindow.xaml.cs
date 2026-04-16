@@ -1,12 +1,16 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using Amazon.S3;
 using Amazon.S3.Model;
+using Amazon;
 using windirstat_s3.Services;
 using WinForms = System.Windows.Forms;
 
@@ -20,9 +24,19 @@ public partial class SyncWindow : Window, INotifyPropertyChanged
     private int _totalFiles;
     private int _downloadedFiles;
     private int _skippedFiles;
+    private int _analyzedFiles;
     private int _remainingFiles;
     private string _speedText = "0 B/s";
     private string _etaText = "-";
+    private string _progressLabel = "0%";
+    private bool _isProgressIndeterminate;
+    private Stopwatch? _downloadStopwatch;
+    private SyncConcurrencyController? _syncConcurrencyController;
+    private readonly StringBuilder _errorLog = new();
+    private string? _loadedIgnoredEntriesFilePath;
+    private List<string> _loadedIgnoredEntries = new();
+    private HashSet<string> _ignoredRootNames = new(StringComparer.OrdinalIgnoreCase);
+    private HashSet<string> _ignoredLoadedFileNames = new(StringComparer.OrdinalIgnoreCase);
 
     public double ProgressPercent
     {
@@ -48,6 +62,12 @@ public partial class SyncWindow : Window, INotifyPropertyChanged
         set { _skippedFiles = value; OnPropertyChanged(nameof(SkippedFiles)); }
     }
 
+    public int AnalyzedFiles
+    {
+        get => _analyzedFiles;
+        set { _analyzedFiles = value; OnPropertyChanged(nameof(AnalyzedFiles)); }
+    }
+
     public int RemainingFiles
     {
         get => _remainingFiles;
@@ -64,6 +84,18 @@ public partial class SyncWindow : Window, INotifyPropertyChanged
     {
         get => _etaText;
         set { _etaText = value; OnPropertyChanged(nameof(EtaText)); }
+    }
+
+    public string ProgressLabel
+    {
+        get => _progressLabel;
+        set { _progressLabel = value; OnPropertyChanged(nameof(ProgressLabel)); }
+    }
+
+    public bool IsProgressIndeterminate
+    {
+        get => _isProgressIndeterminate;
+        set { _isProgressIndeterminate = value; OnPropertyChanged(nameof(IsProgressIndeterminate)); }
     }
 
     public string StatusMessage
@@ -124,9 +156,15 @@ public partial class SyncWindow : Window, INotifyPropertyChanged
         TotalFiles = 0;
         DownloadedFiles = 0;
         SkippedFiles = 0;
+        AnalyzedFiles = 0;
         RemainingFiles = 0;
         SpeedText = "0 B/s";
         EtaText = "-";
+        ProgressLabel = "Preparando...";
+        IsProgressIndeterminate = true;
+        _downloadStopwatch = null;
+        _errorLog.Clear();
+        ErrorLogTextBox.Clear();
         StatusMessage = "Listando objetos...";
 
         try
@@ -137,9 +175,11 @@ public partial class SyncWindow : Window, INotifyPropertyChanged
                 return;
             }
 
+            _syncConcurrencyController = new SyncConcurrencyController(threads);
+
             var credentials = _profileManager.GetCredentials(profileName);
             var region = _profileManager.GetRegion(profileName);
-            using var client = new AmazonS3Client(credentials, region);
+            using var client = CreateS3Client(credentials, region);
             var service = new S3SyncService(client);
 
             if (!TryParsePrefixInput(prefixInput, bucketName, out var parsedBucket, out var normalizedPrefix, out var prefixError))
@@ -160,41 +200,110 @@ public partial class SyncWindow : Window, INotifyPropertyChanged
                 return;
             }
 
-            var stopwatch = Stopwatch.StartNew();
+            var ignoredFileNames = ParseIgnoredFileNames(IgnoreFilesTextBox.Text);
+            ignoredFileNames.UnionWith(_ignoredLoadedFileNames);
+            if (_ignoredRootNames.Count > 0)
+            {
+                AppendErrorLog($"[{DateTime.Now:HH:mm:ss}] Ignorando {_ignoredRootNames.Count} raiz(es) carregada(s) do arquivo de pastas ignoradas.");
+            }
+            else if (_ignoredLoadedFileNames.Count > 0)
+            {
+                AppendErrorLog($"[{DateTime.Now:HH:mm:ss}] Ignorando {_ignoredLoadedFileNames.Count} arquivo(s) carregado(s) do arquivo de pastas ignoradas.");
+            }
+
             var progress = new Progress<S3SyncProgress>(p =>
             {
                 TotalFiles = p.Total;
                 DownloadedFiles = p.Downloaded;
                 SkippedFiles = p.Skipped;
-                RemainingFiles = p.Remaining;
-                ProgressPercent = p.Percent;
-                var seconds = Math.Max(0.001, stopwatch.Elapsed.TotalSeconds);
-                var bytesPerSecond = p.DownloadedBytes / seconds;
-                SpeedText = $"{FormatBytes(bytesPerSecond)}/s";
-                if (bytesPerSecond > 0)
+                AnalyzedFiles = p.Skipped + p.QueuedForDownload + p.Failed;
+                RemainingFiles = p.RemainingDownloads + p.PendingValidation;
+                IsProgressIndeterminate = !p.RemoteListingCompleted;
+
+                if (p.RemoteListingCompleted)
                 {
-                    var etaSeconds = p.RemainingBytes / bytesPerSecond;
+                    var effectiveTotal = Math.Max(1, p.QueuedForDownload + p.Skipped + p.Failed);
+                    ProgressPercent = (double)(p.Downloaded + p.Skipped + p.Failed) / effectiveTotal * 100;
+                    ProgressLabel = $"{ProgressPercent:F1}%";
+                }
+                else
+                {
+                    ProgressPercent = 0;
+                    ProgressLabel = $"Descobertos: {p.Total}";
+                }
+
+                if (p.QueuedDownloadBytes > 0 && _downloadStopwatch == null)
+                {
+                    _downloadStopwatch = Stopwatch.StartNew();
+                }
+
+                var seconds = Math.Max(0.001, _downloadStopwatch?.Elapsed.TotalSeconds ?? 0);
+                var bytesPerSecond = _downloadStopwatch == null ? 0 : p.DownloadedBytes / seconds;
+                SpeedText = $"{FormatBytes(bytesPerSecond)}/s";
+
+                if (bytesPerSecond > 0 && p.RemainingDownloadBytes > 0)
+                {
+                    var etaSeconds = p.RemainingDownloadBytes / bytesPerSecond;
                     EtaText = TimeSpan.FromSeconds(etaSeconds).ToString("hh\\:mm\\:ss");
+                }
+                else if (p.QueuedDownloadBytes > 0 && p.RemainingDownloadBytes == 0)
+                {
+                    EtaText = "00:00:00";
                 }
                 else
                 {
                     EtaText = "-";
                 }
-                StatusMessage = $"Processando... {p.Processed}/{p.Total}";
+
+                StatusMessage = !p.LocalScanCompleted || !p.RemoteListingCompleted
+                    ? $"Validando duplicados... {p.Processed}/{p.Total} | pendentes {p.PendingValidation}"
+                    : $"Baixando... {p.Downloaded}/{p.QueuedForDownload} | falhas {p.Failed}";
             });
 
-            var summary = await service.SyncAsync(bucketName, normalizedPrefix, localFolder, threads, progress);
+            var logProgress = new Progress<string>(AppendErrorLog);
+            var summary = await service.SyncAsync(bucketName, normalizedPrefix, localFolder, threads, _syncConcurrencyController, ignoredFileNames, _ignoredRootNames, progress, logProgress);
 
-            StatusMessage = $"Concluido. Baixados {summary.Downloaded}, ignorados {summary.Skipped}, total {summary.Total}.";
+            IsProgressIndeterminate = false;
+            ProgressPercent = 100;
+            ProgressLabel = "100,0%";
+            StatusMessage = $"Processo concluido com sucesso. Baixados {summary.Downloaded}, ignorados {summary.Skipped}, falhas {summary.Failed}, total {summary.Total}.";
         }
         catch (Exception ex)
         {
+            AppendErrorLog($"[{DateTime.Now:HH:mm:ss}] Erro fatal: {ex.Message}");
             System.Windows.MessageBox.Show(ex.Message, "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
         }
         finally
         {
+            _syncConcurrencyController = null;
             SyncButton.IsEnabled = true;
         }
+    }
+
+    private void ThreadsTextBox_TextChanged(object sender, TextChangedEventArgs e)
+    {
+        if (_syncConcurrencyController == null)
+        {
+            return;
+        }
+
+        if (int.TryParse(ThreadsTextBox.Text, out var threads) && threads >= 1 && threads <= 64)
+        {
+            _syncConcurrencyController.UpdateTargetConcurrency(threads);
+            StatusMessage = $"Ajustando concorrencia para {threads} threads...";
+        }
+    }
+
+    private void AppendErrorLog(string message)
+    {
+        if (string.IsNullOrWhiteSpace(message))
+        {
+            return;
+        }
+
+        _errorLog.AppendLine(message);
+        ErrorLogTextBox.Text = _errorLog.ToString();
+        ErrorLogTextBox.ScrollToEnd();
     }
 
     private void BrowseLocalButton_Click(object sender, RoutedEventArgs e)
@@ -212,7 +321,48 @@ public partial class SyncWindow : Window, INotifyPropertyChanged
         }
     }
 
-    private async void BrowsePrefixButton_Click(object sender, RoutedEventArgs e)
+    private void BrowseIgnoredFoldersFileButton_Click(object sender, RoutedEventArgs e)
+    {
+        using var dialog = new WinForms.OpenFileDialog
+        {
+            Title = "Selecione o arquivo de pastas ignoradas",
+            Filter = "Arquivos de texto (*.txt)|*.txt|Todos os arquivos (*.*)|*.*",
+            CheckFileExists = true,
+            Multiselect = false
+        };
+
+        if (dialog.ShowDialog() != WinForms.DialogResult.OK)
+        {
+            return;
+        }
+
+        try
+        {
+            _loadedIgnoredEntriesFilePath = dialog.FileName;
+            _loadedIgnoredEntries = File.ReadLines(dialog.FileName)
+                .Where(line => !string.IsNullOrWhiteSpace(line))
+                .ToList();
+
+            IgnoredFoldersFileTextBox.Text = dialog.FileName;
+            RefreshLoadedIgnoreEntries();
+        }
+        catch (Exception ex)
+        {
+            System.Windows.MessageBox.Show(ex.Message, "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
+    private void IgnoreModeCheckBox_Changed(object sender, RoutedEventArgs e)
+    {
+        if (_loadedIgnoredEntries.Count == 0)
+        {
+            return;
+        }
+
+        RefreshLoadedIgnoreEntries();
+    }
+
+    private void BrowsePrefixButton_Click(object sender, RoutedEventArgs e)
     {
         var profileName = ProfileComboBox.SelectedItem as string;
         var bucketName = BucketComboBox.SelectedItem as string;
@@ -227,7 +377,7 @@ public partial class SyncWindow : Window, INotifyPropertyChanged
         {
             var credentials = _profileManager.GetCredentials(profileName);
             var region = _profileManager.GetRegion(profileName);
-            using var client = new AmazonS3Client(credentials, region);
+            using var client = CreateS3Client(credentials, region);
 
             var picker = new S3PrefixPickerWindow(client, bucketName) { Owner = this };
             if (picker.ShowDialog() == true)
@@ -259,7 +409,7 @@ public partial class SyncWindow : Window, INotifyPropertyChanged
         {
             var credentials = _profileManager.GetCredentials(profileName);
             var region = _profileManager.GetRegion(profileName);
-            using var client = new AmazonS3Client(credentials, region);
+            using var client = CreateS3Client(credentials, region);
             var response = await client.ListBucketsAsync();
             var buckets = response.Buckets.Select(b => b.BucketName).OrderBy(b => b).ToList();
             BucketComboBox.ItemsSource = buckets;
@@ -286,6 +436,18 @@ public partial class SyncWindow : Window, INotifyPropertyChanged
         }
 
         return $"{size:0.0} {units[unit]}";
+    }
+
+    private static AmazonS3Client CreateS3Client(Amazon.Runtime.AWSCredentials credentials, RegionEndpoint region)
+    {
+        var config = new AmazonS3Config
+        {
+            RegionEndpoint = region,
+            MaxConnectionsPerServer = 256,
+            BufferSize = 1024 * 256
+        };
+
+        return new AmazonS3Client(credentials, config);
     }
 
     private static bool TryParsePrefixInput(
@@ -347,6 +509,169 @@ public partial class SyncWindow : Window, INotifyPropertyChanged
 
         normalizedPrefix = S3SyncService.NormalizePrefix(trimmed);
         return true;
+    }
+
+    private static HashSet<string> ParseIgnoredFileNames(string? multiLineText)
+    {
+        var result = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        if (string.IsNullOrWhiteSpace(multiLineText))
+        {
+            return result;
+        }
+
+        var lines = multiLineText.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        foreach (var line in lines)
+        {
+            if (!string.IsNullOrWhiteSpace(line))
+            {
+                result.Add(line);
+            }
+        }
+
+        return result;
+    }
+
+    private void RefreshLoadedIgnoreEntries()
+    {
+        var ignoreByDirectory = IgnoreByDirectoryCheckBox.IsChecked != false;
+        _ignoredRootNames = ignoreByDirectory
+            ? ExtractIgnoredRootNames(_loadedIgnoredEntries)
+            : new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        _ignoredLoadedFileNames = ignoreByDirectory
+            ? new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            : ExtractIgnoredFileNames(_loadedIgnoredEntries);
+
+        if (string.IsNullOrWhiteSpace(_loadedIgnoredEntriesFilePath))
+        {
+            return;
+        }
+
+        var ignoredCount = ignoreByDirectory ? _ignoredRootNames.Count : _ignoredLoadedFileNames.Count;
+        var ignoredKind = ignoreByDirectory ? "raiz(es)" : "arquivo(s)";
+        var modeLabel = ignoreByDirectory ? "diretorio raiz" : "arquivo";
+        AppendErrorLog($"[{DateTime.Now:HH:mm:ss}] Arquivo carregado em modo {modeLabel}: {ignoredCount} {ignoredKind} para ignorar.");
+    }
+
+    private static HashSet<string> ExtractIgnoredRootNames(IEnumerable<string> lines)
+    {
+        var result = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var normalizedLines = lines
+            .Where(line => !string.IsNullOrWhiteSpace(line))
+            .Select(line => line.Trim())
+            .ToList();
+
+        if (normalizedLines.Count == 0)
+        {
+            return result;
+        }
+
+        var commonBaseSegments = GetCommonBaseSegments(normalizedLines);
+        foreach (var line in normalizedLines)
+        {
+            var root = ExtractRootNameFromLoadedLine(line, commonBaseSegments);
+            if (!string.IsNullOrWhiteSpace(root))
+            {
+                result.Add(root);
+            }
+        }
+
+        return result;
+    }
+
+    private static HashSet<string> ExtractIgnoredFileNames(IEnumerable<string> lines)
+    {
+        var result = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var line in lines)
+        {
+            if (!LooksLikeFilePath(line))
+            {
+                continue;
+            }
+
+            var fileName = Path.GetFileName(line.Trim());
+            if (!string.IsNullOrWhiteSpace(fileName))
+            {
+                result.Add(fileName);
+            }
+        }
+
+        return result;
+    }
+
+    private static string? ExtractRootNameFromLoadedLine(string line, IReadOnlyList<string> commonBaseSegments)
+    {
+        if (string.IsNullOrWhiteSpace(line))
+        {
+            return null;
+        }
+
+        var segments = SplitPathSegments(line);
+        if (segments.Count == 0)
+        {
+            return null;
+        }
+
+        return segments.Count > commonBaseSegments.Count
+            ? segments[commonBaseSegments.Count]
+            : segments[^1];
+    }
+
+    private static List<string> GetCommonBaseSegments(IReadOnlyList<string> lines)
+    {
+        var splitLines = lines
+            .Select(SplitPathSegments)
+            .Where(segments => segments.Count > 0)
+            .ToList();
+
+        if (splitLines.Count == 0)
+        {
+            return new List<string>();
+        }
+
+        var common = new List<string>();
+        var minLength = splitLines.Min(segments => segments.Count);
+        for (var i = 0; i < minLength; i++)
+        {
+            var candidate = splitLines[0][i];
+            if (splitLines.All(segments => string.Equals(segments[i], candidate, StringComparison.OrdinalIgnoreCase)))
+            {
+                common.Add(candidate);
+                continue;
+            }
+
+            break;
+        }
+
+        return common;
+    }
+
+    private static List<string> SplitPathSegments(string path)
+    {
+        return path.Trim()
+            .Replace('\\', '/')
+            .Split('/', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .ToList();
+    }
+
+    private static bool LooksLikeFilePath(string? path)
+    {
+        if (string.IsNullOrWhiteSpace(path))
+        {
+            return false;
+        }
+
+        var trimmed = path.Trim();
+        if (File.Exists(trimmed))
+        {
+            return true;
+        }
+
+        if (Directory.Exists(trimmed))
+        {
+            return false;
+        }
+
+        return Path.HasExtension(trimmed);
     }
 
     private static async Task<bool> PrefixExistsAsync(IAmazonS3 s3, string bucketName, string prefix)

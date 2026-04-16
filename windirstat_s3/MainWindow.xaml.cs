@@ -51,7 +51,12 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         var profiles = _profileManager.ListProfiles().ToList();
         if (!profiles.Any())
         {
-            var dialog = new CredentialsWindow { Owner = this };
+            var dialog = new CredentialsWindow();
+            if (IsLoaded)
+            {
+                dialog.Owner = this;
+            }
+
             if (dialog.ShowDialog() == true && dialog.SaveCredentials && dialog.SelectedRegion != null)
             {
                 _profileManager.SaveProfile("default", dialog.AccessKeyId, dialog.SecretAccessKey, dialog.SelectedRegion);
